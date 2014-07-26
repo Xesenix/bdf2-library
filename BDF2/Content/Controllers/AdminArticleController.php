@@ -31,7 +31,7 @@ namespace BDF2\Content\Controllers
 				$app->abort(404, "Artykuł id:$id nie istnieje.");
 			}
 			
-			$form = $app['form.factory']->create(new ArticleType(), $article);
+			$form = $app['form.factory']->create(new ArticleType($app['form.data_transformer']('DateTime')), $article);
 			
 			if ($request->getMethod() == 'POST')
 			{

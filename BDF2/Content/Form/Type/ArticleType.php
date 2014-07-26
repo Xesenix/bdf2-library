@@ -2,10 +2,18 @@
 namespace BDF2\Content\Form\Type
 {
 	use Symfony\Component\Form\AbstractType;
+	use Symfony\Component\Form\DataTransformerInterface;
 	use Symfony\Component\Form\FormBuilderInterface;
 	use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 	
 	class ArticleType extends AbstractType {
+		
+		protected $dateTransformer = null;
+		
+		public function __construct(DataTransformerInterface $dateTransformer)
+		{
+			$this->dateTransformer = $dateTransformer;
+		}
 		
 		public function buildForm(FormBuilderInterface $builder, array $options)
 		{
@@ -13,9 +21,9 @@ namespace BDF2\Content\Form\Type
 				->add('id', 'hidden')
 				->add('slug')
 				->add('title')
-				->add('content', 'test')
-				->add('author');
-				//->add('date');
+				->add('content', 'textarea')
+				->add('date')
+				->add($builder->create('date', 'text')->addModelTransformer($this->dateTransformer));
 		}
 		
 		public function setDefaultOptions(OptionsResolverInterface $resolver)
