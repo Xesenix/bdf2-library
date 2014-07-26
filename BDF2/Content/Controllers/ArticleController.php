@@ -1,6 +1,6 @@
 <?php
 
-namespace BDF2\Controllers
+namespace BDF2\Content\Controllers
 {
 	use Silex\Application;
 	use Symfony\Component\HttpFoundation\Request;
@@ -9,16 +9,19 @@ namespace BDF2\Controllers
 	class ArticleController {
 		public function listAction(Application $app)
 		{
-			$entityManager = $app['em'];
+			$entityManager = $app['orm.em'];
 			
-			return $app['twig']->render('article/list.html', array('pageTitle' => 'Test listy artykułów', 'articles' => $entityManager->getRepository('BDF2\Content\Entity\Article')->findAll()));
+			return $app['twig']->render('article/list.html', array(
+				'pageTitle' => 'Test listy artykułów',
+				'articles' => $entityManager->getRepository('BDF2\Content\Entity\Article')->findAll())
+			);
 		}
 		
 		public function articleAction(Application $app, Request $request)
 		{
-			$slug = $request->get('slug');
+			$entityManager = $app['orm.em'];
 			
-			$entityManager = $app['em'];
+			$slug = $request->get('slug');
 			
 			$article = $entityManager->getRepository('BDF2\Content\Entity\Article')->findOneBy(array('slug' => $slug));
 			

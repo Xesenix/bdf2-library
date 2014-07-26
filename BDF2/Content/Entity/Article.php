@@ -2,36 +2,40 @@
 
 namespace BDF2\Content\Entity
 {
-/**
- * @Entity @Table(name="articles")
- **/
+	/**
+	 * @Entity @Table(name="articles")
+	 **/
 	class Article {
 		
 		/** @Id @Column(type="integer") @GeneratedValue **/
-	    protected $id;
+		protected $id;
 		
-	    /** @Column(type="string") **/
-	    protected $slug;
+		/** @Column(type="string") **/
+		protected $slug;
 		
-	    /** @Column(type="string") **/
-	    protected $title;
+		/** @Column(type="string") **/
+		protected $title;
 		
-	    /** @Column(type="text") **/
-	    protected $content;
+		/** @Column(type="text") **/
+		protected $content;
 		
-	    /** @Column(type="string") **/
-	    protected $author;
+		/** @Column(type="string") **/
+		protected $author;
 		
-	    /** @Column(type="date") **/
-	    protected $date;
+		/** @Column(type="date") **/
+		protected $date;
 		
 		
-		public function __construct($title = '', $content = '', $author = '', $date = '')
+		public function setId($id)
 		{
-			$this->setTitle($title);
-			$this->setContent($content);
-			$this->setAuthor($author);
-			$this->setDate($date);
+			$this->id = $id;
+			
+			return $this;
+		}
+		
+		public function getId()
+		{
+			return $this->id;
 		}
 		
 		public function setSlug($slug)
