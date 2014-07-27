@@ -18,6 +18,7 @@ namespace BDF2\Resources\Provider
 			$module->match($app['routes.resources.css_clear'], 'BDF2\\Resources\Controllers\AssetController::clearCssAction')->bind('css-clear')->value('path', '/');
 			$module->match($app['routes.resources.js'], 'BDF2\\Resources\Controllers\AssetController::generateJsAction')->bind('js');
 			$module->match($app['routes.resources.js_clear'], 'BDF2\\Resources\Controllers\AssetController::clearJsAction')->bind('js-clear')->value('path', '/');
+			$module->match($app['routes.resources.assets'], 'BDF2\\Resources\Controllers\AssetController::generateAssetAction')->bind('asset')->assert('file', '[\w-\._/]+\.(jpg|png|gif)');
 			
 			return $module;
 		}
@@ -33,9 +34,10 @@ namespace BDF2\Resources\Provider
 			// Setup routing
 			$app['routes.resources'] = '/resources';
 			$app['routes.resources.css'] = '/css/{file}';
-			$app['routes.resources.css_clear'] = '/css-clear/{path}';
+			$app['routes.resources.css_clear'] = '/css-clear{path}';
 			$app['routes.resources.js'] = '/js/{file}';
-			$app['routes.resources.js_clear'] = '/js-clear/{path}';
+			$app['routes.resources.js_clear'] = '/js-clear{path}';
+			$app['routes.resources.assets'] = '/{file}';
 			
 			// file system path to resources directory aviable to public view
 			$app['path.resources'] = $app->share(function() use($app) {
@@ -44,6 +46,8 @@ namespace BDF2\Resources\Provider
 			// relative path to asset directories inside resource folder
 			$app['path.resources.css'] = '/css';
 			$app['path.resources.js'] = '/js';
+			$app['path.resources.assets'] = '/';
+			
 			
 			// file system paths to asset sources folders inside project and its modules
 			$app['resources.paths'] = $app->share(function() {
@@ -56,6 +60,15 @@ namespace BDF2\Resources\Provider
 			});
 			
 			// helpers for asset manipulation
+			$app['resources.asset.assets'] = $app->share(function() use($app) {
+				$assetRoot = $app['path.helper']->joinPaths($app['path.resources'], $app['path.resources.assets']);
+				
+				$asset = new FileAsset($app['resources.locator'], $assetRoot, $app['path.helper']);
+				//$asset->setDevMode($app['resources.dev_mode']);
+				
+				return $asset;
+			});
+			
 			$app['resources.asset.css'] = $app->share(function() use($app) {
 				$assetRoot = $app['path.helper']->joinPaths($app['path.resources'], $app['path.resources.css']);
 				

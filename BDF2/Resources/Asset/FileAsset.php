@@ -59,9 +59,11 @@ namespace BDF2\Resources\Asset
 				{
 					$this->fs->copy($filepath, $assetsPath);
 				}
+				
+				return $filepath;
 			}
 			
-			return $this->getAsset($asset);
+			return null;
 		}
 		
 		public function unpublishAssets($path)
