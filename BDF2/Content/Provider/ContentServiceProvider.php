@@ -4,8 +4,19 @@ namespace BDF2\Content\Provider
 {
 	use Silex\Application;
 	use Silex\ServiceProviderInterface;
+	use Silex\ControllerProviderInterface;
 	
-	class ContentServiceProvider implements ServiceProviderInterface {
+	class ContentServiceProvider implements ServiceProviderInterface, ControllerProviderInterface {
+		
+		public function connect(Application $app)
+		{
+			$module = $app['controllers_factory'];
+			
+			$module->match('/', 'BDF2\\Content\Controllers\ArticleController::listAction')->bind('articles');
+			$module->match('/{slug}', 'BDF2\\Content\Controllers\ArticleController::articleAction')->bind('article');
+			
+			return $module;
+		}
 		
 		public function register(Application $app)
 		{
@@ -16,20 +27,11 @@ namespace BDF2\Content\Provider
 	        }
 			
 			// Setup routing
-			$app['content.root'] = '/articles';
-			
-			$app['content.module_controller'] = $app->share(function() use($app) {
-				$module = $app['controllers_factory'];
-				
-				$module->match('/', 'BDF2\\Content\Controllers\ArticleController::listAction')->bind('articles');
-				$module->match('/{slug}', 'BDF2\\Content\Controllers\ArticleController::articleAction')->bind('article');
-				
-				return $module;
-			});
+			$app['routes.content'] = '/articles';
 			
 			// Adding entities to ORM Entity Manager
 			$app['orm.em.paths'] = $app->share($app->extend('orm.em.paths', function ($paths) use ($app) {
-				$paths[] = array(__DIR__ . '/../Entity');
+				$paths[] = __DIR__ . '/../Entity';
 				
 				return $paths;
 			}));
@@ -37,7 +39,7 @@ namespace BDF2\Content\Provider
 
 	    public function boot(Application $app)
 	    {
-			$app->mount($app['routes.content'], $app['content.module_controller']);
+			$app->mount($app['routes.content'], $this);
 	    }
 	}
 }

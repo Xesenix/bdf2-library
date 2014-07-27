@@ -4,9 +4,20 @@ namespace BDF2\Content\Provider
 {
 	use Silex\Application;
 	use Silex\ServiceProviderInterface;
+	use Silex\ControllerProviderInterface;
 	use BDF2\Content\Form\ArticleType;
 	
-	class AdminContentServiceProvider implements ServiceProviderInterface {
+	class AdminContentServiceProvider implements ServiceProviderInterface, ControllerProviderInterface {
+		
+		public function connect(Application $app)
+		{
+			$module = $app['controllers_factory'];
+			
+			$module->match('/', 'BDF2\\Content\Controllers\AdminArticleController::listAction')->bind('articles');
+			$module->match('/{id}', 'BDF2\\Content\Controllers\AdminArticleController::editAction')->bind('article');
+			
+			return $module;
+		}
 		
 		public function register(Application $app)
 		{
@@ -18,15 +29,6 @@ namespace BDF2\Content\Provider
 			
 			// Setup routing
 			$app['routes.content.admin'] = '/articles';
-			
-			$app['content.admin.module_controller'] = $app->share(function() use($app) {
-				$module = $app['controllers_factory'];
-				
-				$module->match('/', 'BDF2\\Content\Controllers\AdminArticleController::listAction')->bind('articles');
-				$module->match('/{id}', 'BDF2\\Content\Controllers\AdminArticleController::editAction')->bind('article');
-				
-				return $module;
-			});
 			
 			/*$app['form.extensions'] = $app->share($app->extend('form.extensions', function ($extensions) use ($app) {
 				$extensions[] = new ArticleType();
@@ -42,7 +44,7 @@ namespace BDF2\Content\Provider
 			
 			// Adding entities to ORM Entity Manager
 			$app['orm.em.paths'] = $app->share($app->extend('orm.em.paths', function ($paths) use ($app) {
-				$paths[] = array(__DIR__ . '/../Entity');
+				$paths[] = __DIR__ . '/../Entity';
 				
 				return $paths;
 			}));
@@ -50,7 +52,7 @@ namespace BDF2\Content\Provider
 
 	    public function boot(Application $app)
 	    {
-			$app->mount($app['routes.content.admin'], $app['content.admin.module_controller']);
+			$app->mount($app['routes.content.admin'], $this);
 	    }
 	}
 }

@@ -22,7 +22,7 @@ namespace BDF2\Content\Form\Type
 				->add('slug')
 				->add('title')
 				->add('content', 'textarea')
-				->add('date')
+				->add('author')
 				->add($builder->create('date', 'text')->addModelTransformer($this->dateTransformer));
 		}
 		
