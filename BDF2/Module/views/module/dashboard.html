@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+
+{% block mainContent %}
+	<ul>
+		{% for module in modules %}
+		<li>
+			<a href="{{ path(module.route, {id: module.id}) }}">{{ module.name }}</a>
+		</li>
+		{% endfor %}
+		<li>
+			<a href="{{ path('module:add') }}">
+				Instaluj moduł
+			</a>
+		</li>
+	</ul>
+{% endblock %}

@@ -8,32 +8,39 @@ namespace BDF2\Content\Controllers
 	use BDF2\Content\Form\Type\ArticleType;
 	
 	class AdminArticleController {
-		public function listAction(Application $app)
+		
+		public function __construct(Application $app)
 		{
-			$entityManager = $app['orm.em'];
-			
-			return $app['twig']->render('article/list.html', array(
-				'pageTitle' => 'Lista artykułów',
-				'articles' => $entityManager->getRepository('BDF2\Content\Entity\Article')->findAll())
-			);
+			$this->app = $app;
+			$this->request = $app['request'];
 		}
 		
-		public function editAction(Application $app, Request $request)
+		public function listAction()
 		{
-			$entityManager = $app['orm.em'];
+			$entityManager = $this->app['orm.em'];
 			
-			$id = $request->get('id');
+			return $this->app['twig']->render('article/list.html', array(
+				'pageTitle' => 'Lista artykułów',
+				'articles' => $entityManager->getRepository('BDF2\Content\Entity\Article')->findAll()
+			));
+		}
+		
+		public function editAction()
+		{
+			$entityManager = $this->app['orm.em'];
+			
+			$id = $this->request->get('id');
 			
 			$article = $entityManager->getRepository('BDF2\Content\Entity\Article')->findOneBy(array('id' => $id));
 			
 			if ($article == null)
 			{
-				$app->abort(404, "Artykuł id:$id nie istnieje.");
+				$this->app->abort(404, "Artykuł id:$id nie istnieje.");
 			}
 			
-			$form = $app['form.factory']->create(new ArticleType($app['form.data_transformer.date_time']), $article);
+			$form = $this->app['form.factory']->create(new ArticleType($this->app['form.data_transformer.date_time']), $article);
 			
-			if ($request->getMethod() == 'POST')
+			if ($this->request->getMethod() == 'POST')
 			{
 				$form->bind($request);
 				
@@ -44,7 +51,7 @@ namespace BDF2\Content\Controllers
 				}
 			}
 			
-			return $app['twig']->render('article/edit.html', array(
+			return $this->app['twig']->render('article/edit.html', array(
 				'pageTitle' => 'Edycja artykułu',
 				'form' => $form->createView(),
 			));

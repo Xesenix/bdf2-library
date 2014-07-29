@@ -6,6 +6,7 @@ namespace BDF2\Content\Provider
 	use Silex\ServiceProviderInterface;
 	use Silex\ControllerProviderInterface;
 	use BDF2\Content\Form\ArticleType;
+	use BDF2\Content\Controllers\AdminArticleController;
 	
 	class AdminContentServiceProvider implements ServiceProviderInterface, ControllerProviderInterface {
 		
@@ -13,8 +14,8 @@ namespace BDF2\Content\Provider
 		{
 			$module = $app['controllers_factory'];
 			
-			$module->match('/', 'BDF2\\Content\Controllers\AdminArticleController::listAction')->bind('articles');
-			$module->match('/{id}', 'BDF2\\Content\Controllers\AdminArticleController::editAction')->bind('article');
+			$module->match('/', 'content.controllers.admin_article_controller:listAction')->bind('articles');
+			$module->match('/{id}', 'content.controllers.admin_article_controller:editAction')->bind('article');
 			
 			return $module;
 		}
@@ -27,8 +28,13 @@ namespace BDF2\Content\Provider
 				throw new \RuntimeException('You must register ORM EntityManager before registring ' . get_class($this));
 	        }
 			
+			// Setup Controllers
+			$app['content.controllers.admin_article_controller'] = $app->share(function() use($app) {
+				return new AdminArticleController($app);
+			});
+			
 			// Setup routing
-			$app['routes.content.admin'] = '/articles';
+			$app['content.routes.admin_prefix'] = '/articles';
 			
 			/*$app['form.extensions'] = $app->share($app->extend('form.extensions', function ($extensions) use ($app) {
 				$extensions[] = new ArticleType();
@@ -52,7 +58,7 @@ namespace BDF2\Content\Provider
 
 	    public function boot(Application $app)
 	    {
-			$app->mount($app['routes.content.admin'], $this);
+			$app->mount($app['content.routes.admin_prefix'], $this);
 	    }
 	}
 }

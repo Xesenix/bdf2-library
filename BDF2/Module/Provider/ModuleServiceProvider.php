@@ -1,20 +1,19 @@
 <?php
-
-namespace BDF2\Content\Provider
+namespace BDF2\Module\Provider
 {
 	use Silex\Application;
 	use Silex\ServiceProviderInterface;
 	use Silex\ControllerProviderInterface;
-	use BDF2\Content\Controllers\ArticleController;
+	use BDF2\Module\Controllers\ModuleController;
 	
-	class ContentServiceProvider implements ServiceProviderInterface, ControllerProviderInterface {
+	class ModuleServiceProvider implements ServiceProviderInterface, ControllerProviderInterface {
 		
 		public function connect(Application $app)
 		{
 			$module = $app['controllers_factory'];
 			
-			$module->match('/', 'content.controllers.article_controller:listAction')->bind('articles');
-			$module->match('/{slug}', 'content.controllers.article_controller:articleAction')->bind('article');
+			$module->match('/', 'module.controllers.module_controller:dashboardAction')->bind('module:dashboard');
+			$module->match('/install', 'module.controllers.module_controller:installAction')->bind('module:add');
 			
 			return $module;
 		}
@@ -28,12 +27,12 @@ namespace BDF2\Content\Provider
 	        }
 			
 			// Setup Controllers
-			$app['content.controllers.article_controller'] = $app->share(function() use($app) {
-				return new ArticleController($app);
+			$app['module.controllers.module_controller'] = $app->share(function() use($app) {
+				return new ModuleController($app);
 			});
-			
+						
 			// Setup routing
-			$app['content.routes.prefix'] = '/articles';
+			$app['module.routes.prefix'] = '/modules';
 			
 			// Adding entities to ORM Entity Manager
 			$app['orm.em.paths'] = $app->share($app->extend('orm.em.paths', function ($paths) use ($app) {
@@ -41,11 +40,18 @@ namespace BDF2\Content\Provider
 				
 				return $paths;
 			}));
+			
+			// Adding view paths
+			$app['twig.path'] = $app->share($app->extend('twig.path', function ($paths) {
+				$paths[] = __DIR__ . '/../views';
+				
+				return $paths;
+			}));
 		}
 
 	    public function boot(Application $app)
 	    {
-			$app->mount($app['content.routes.prefix'], $this);
+			$app->mount($app['module.routes.prefix'], $this);
 	    }
 	}
 }
