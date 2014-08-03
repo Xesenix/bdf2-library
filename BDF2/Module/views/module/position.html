@@ -1,0 +1,5 @@
+{% block modules %}
+	{% for module in modules %}
+		<div class="box">{{ render(url(module.route, { module: module.id })) }}</div>
+	{% endfor %}
+{% endblock %}

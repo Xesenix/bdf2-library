@@ -5,7 +5,7 @@ namespace BDF2\Content\Provider
 	use Silex\Application;
 	use Silex\ServiceProviderInterface;
 	use Silex\ControllerProviderInterface;
-	use BDF2\Content\Form\ArticleType;
+	use BDF2\Content\Form\Type\ArticleType;
 	use BDF2\Content\Controllers\AdminArticleController;
 	
 	class AdminContentServiceProvider implements ServiceProviderInterface, ControllerProviderInterface {
@@ -15,7 +15,7 @@ namespace BDF2\Content\Provider
 			$module = $app['controllers_factory'];
 			
 			$module->match('/', 'content.controllers.admin_article_controller:listAction')->bind('articles');
-			$module->match('/{id}', 'content.controllers.admin_article_controller:editAction')->bind('article');
+			$module->match('/article/{id}', 'content.controllers.admin_article_controller:editAction')->bind('article');
 			
 			return $module;
 		}
@@ -54,6 +54,11 @@ namespace BDF2\Content\Provider
 				
 				return $paths;
 			}));
+			
+			// Setup form
+			$app['content.form'] = $app->protect(function ($article) use($app) {
+				return $app['form.factory']->create(new ArticleType($app['form.data_transformer.date_time']), $article);
+			});
 		}
 
 	    public function boot(Application $app)

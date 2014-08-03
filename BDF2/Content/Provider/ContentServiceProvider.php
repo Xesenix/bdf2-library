@@ -24,7 +24,7 @@ namespace BDF2\Content\Provider
 			// Checking for dependencies
 			if (!isset($app['orm.em'])) 
 			{
-				throw new \RuntimeException('You must register ORM EntityManager before registring  ' . get_class($this));
+				throw new \RuntimeException('You must register ORM EntityManager before registring ' . get_class($this));
 	        }
 			
 			// Setup Controllers

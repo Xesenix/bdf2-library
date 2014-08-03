@@ -3,31 +3,26 @@ namespace BDF2\Module\Controllers
 {
 	use Silex\Application;
 	use Symfony\Component\HttpFoundation\Request;
+	use BDF2\Controllers\AbstractController;
+	use BDF2\Module\Entity\Module;
 	
-	class ModuleController {
+	class ModuleController extends AbstractController {
 		
-		public function __construct(Application $app)
-		{
-			$this->app = $app;
-			$this->request = $app['request'];
-		}
-		
-		public function dashboardAction()
+		public function renderPositionAction($position)
 		{
 			$entityManager = $this->app['orm.em'];
 			
-			return $this->app['twig']->render('module/dashboard.html', array(
-				'pageTitle' => 'Tablica modułów',
-				'modules' => $entityManager->getRepository('BDF2\Module\Entity\Module')->findAll(),
+			$modules = $entityManager->getRepository('BDF2\Module\Entity\Module')->findByPosition($position);
+			
+			return $this->render('module/position.html', array(
+				'modules' => $modules,
 			));
 		}
 		
-		public function installAction()
+		public function renderContentAction(Module $module)
 		{
-			$entityManager = $this->app['orm.em'];
-			
-			return $this->app['twig']->render('module/install.html', array(
-				'pageTitle' => 'Instalacja modułów',
+			return $this->render('module/content.html', array(
+				'module' => $module,
 			));
 		}
 	}

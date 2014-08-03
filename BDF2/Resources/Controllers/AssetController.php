@@ -3,73 +3,58 @@ namespace BDF2\Resources\Controllers
 {
 	use Silex\Application;
 	use Symfony\Component\HttpFoundation\Request;
+	use BDF2\Controllers\AbstractController;
+	use Symfony\Component\HttpFoundation\File\File;
 	
-	class AssetController {
+	class AssetController extends AbstractController {
 		
-		public function generateAssetAction(Application $app, Request $request)
+		public function generateAssetAction($file)
 		{
-			$file = $request->get('file');
-			
-			$asset = $app['resources.asset.assets'];
+			$asset = $this->app['resources.asset'];
 			
 			$path = $asset->publishAsset($file);
 			
 			if ($path === null)
 			{
-				$app->abort(404, "Zasób $file nie istnieje.");
+				$this->app->abort(404, "Zasób $file nie istnieje.");
 			}
 			
-			return $app->sendFile($path, 200, array('Content-Type' => 'image/png'));
+			$assetFile = new File($path);
+			
+			return $this->app->sendFile($path, 200, array('Content-Type' => $assetFile->getMimeType()));
 		}
 		
-		public function generateCssAction(Application $app, Request $request)
+		public function generateCssAction($file)
 		{
-			$file = $request->get('file');
-			
-			$asset = $app['resources.asset.css'];
+			$asset = $this->app['resources.asset'];
 			
 			$path = $asset->publishAsset($file);
 			
 			if ($path === null)
 			{
-				$app->abort(404, "Zasób $file nie istnieje.");
+				$this->app->abort(404, "Zasób $file nie istnieje.");
 			}
 			
-			return $app->sendFile($path, 200, array('Content-Type' => 'text/css'));
+			return $this->app->sendFile($path, 200, array('Content-Type' => 'text/css'));
 		}
 		
-		public function clearCssAction(Application $app, Request $request)
+		public function generateJsAction($file)
 		{
-			$path = $request->get('path');
-			
-			$asset = $app['resources.asset.css'];
-			
-			$asset->unpublishAssets($path);
-			
-			return '';
-		}
-		
-		public function generateJsAction(Application $app, Request $request)
-		{
-			$file = $request->get('file');
-			
-			$asset = $app['resources.asset.js'];
+			$asset = $this->app['resources.asset'];
 			
 			$path = $asset->publishAsset($file);
 			
 			if ($path === null)
 			{
-				$app->abort(404, "Zasób $file nie istnieje.");
+				$this->app->abort(404, "Zasób $file nie istnieje.");
 			}
 			
-			return $app->sendFile($path, 200, array('Content-Type' => 'text/javascript'));
+			return $this->app->sendFile($path, 200, array('Content-Type' => 'text/javascript'));
 		}
 		
-		public function clearJsAction(Application $app, Request $request)
+		public function clearAction($path)
 		{
-			$path = $request->get('path');
-			
-			$asset = $app['resources.asset.js'];
+			$asset = $this->app['resources.asset'];
 			
 			$asset->unpublishAssets($path);
 			

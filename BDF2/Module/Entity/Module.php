@@ -10,11 +10,15 @@ namespace BDF2\Module\Entity
 		public $id;
 		
 		/** @Column(type="string") **/
-		public $route;
-		
-		/** @Column(type="string") **/
 		public $name;
 		
+		/** @Column(type="string") **/
+		public $position;
 		
+		/** @Column(type="text") **/
+		public $content;
+		
+		
+		public $route = 'module:content';
 	}
 }

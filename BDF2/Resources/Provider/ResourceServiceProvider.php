@@ -7,6 +7,7 @@ namespace BDF2\Resources\Provider
 	use BDF2\Resources\PathHelper;
 	use BDF2\Resources\File\FileLocator;
 	use BDF2\Resources\Asset\FileAsset;
+	use BDF2\Resources\Controllers\AssetController;
 	
 	class ResourceServiceProvider implements ServiceProviderInterface, ControllerProviderInterface {
 		
@@ -14,11 +15,11 @@ namespace BDF2\Resources\Provider
 		{
 			$module = $app['controllers_factory'];
 			
-			$module->match($app['routes.resources.css'], 'BDF2\\Resources\Controllers\AssetController::generateCssAction')->bind('css');
-			$module->match($app['routes.resources.css_clear'], 'BDF2\\Resources\Controllers\AssetController::clearCssAction')->bind('css-clear')->value('path', '/');
-			$module->match($app['routes.resources.js'], 'BDF2\\Resources\Controllers\AssetController::generateJsAction')->bind('js');
-			$module->match($app['routes.resources.js_clear'], 'BDF2\\Resources\Controllers\AssetController::clearJsAction')->bind('js-clear')->value('path', '/');
-			$module->match($app['routes.resources.assets'], 'BDF2\\Resources\Controllers\AssetController::generateAssetAction')->bind('asset')->assert('file', '[\w-\._/]+\.(jpg|png|gif)');
+			$module->match($app['resources.routes.asset'], 'resources.controllers.resources_controller:generateJsAction')->bind('resource:js')->assert('file', '[\w-\._/]+\.js');
+			$module->match($app['resources.routes.asset'], 'resources.controllers.resources_controller:generateCssAction')->bind('resource:css')->assert('file', '[\w-\._/]+\.css');
+			$module->match($app['resources.routes.asset'], 'resources.controllers.resources_controller:generateAssetAction')->bind('resource:image')->assert('file', '[\w-\._/]+\.(jpg|png|gif)');
+			$module->match($app['resources.routes.asset'], 'resources.controllers.resources_controller:generateAssetAction')->bind('resource:asset')->assert('file', '[\w-\._/]+');
+			$module->match($app['resources.routes.clear'], 'resources.controllers.resources_controller:clearAction')->bind('resource:clear')->value('path', '/');
 			
 			return $module;
 		}
@@ -31,23 +32,23 @@ namespace BDF2\Resources\Provider
 				return new PathHelper();
 			});
 			
-			// Setup routing
-			$app['routes.resources'] = '/resources';
-			$app['routes.resources.css'] = '/css/{file}';
-			$app['routes.resources.css_clear'] = '/css-clear{path}';
-			$app['routes.resources.js'] = '/js/{file}';
-			$app['routes.resources.js_clear'] = '/js-clear{path}';
-			$app['routes.resources.assets'] = '/{file}';
-			
-			// file system path to resources directory aviable to public view
-			$app['path.resources'] = $app->share(function() use($app) {
-				return $app['path.helper']->joinPaths($app['path.root'], '/resources');
+			// Setup Controllers
+			$app['resources.controllers.resources_controller'] = $app->share(function() use($app) {
+				return new AssetController($app);
 			});
-			// relative path to asset directories inside resource folder
-			$app['path.resources.css'] = '/css';
-			$app['path.resources.js'] = '/js';
-			$app['path.resources.assets'] = '/';
 			
+			// route for resources
+			$app['resources.routes.prefix'] = '/resources';
+			$app['resources.routes.asset'] = '/{file}';
+			$app['resources.routes.clear'] = '/clear{path}';
+			
+			// relative path to resource directory on public accessible path
+			$app['resources.path.public'] = '/resources';
+			
+			// file system path to resources directory available to public view
+			$app['path.resources'] = $app->share(function() use($app) {
+				return $app['path.helper']->joinPaths($app['path.root'], $app['resources.routes.prefix']);
+			});
 			
 			// file system paths to asset sources folders inside project and its modules
 			$app['resources.paths'] = $app->share(function() {
@@ -60,28 +61,8 @@ namespace BDF2\Resources\Provider
 			});
 			
 			// helpers for asset manipulation
-			$app['resources.asset.assets'] = $app->share(function() use($app) {
-				$assetRoot = $app['path.helper']->joinPaths($app['path.resources'], $app['path.resources.assets']);
-				
-				$asset = new FileAsset($app['resources.locator'], $assetRoot, $app['path.helper']);
-				//$asset->setDevMode($app['resources.dev_mode']);
-				
-				return $asset;
-			});
-			
-			$app['resources.asset.css'] = $app->share(function() use($app) {
-				$assetRoot = $app['path.helper']->joinPaths($app['path.resources'], $app['path.resources.css']);
-				
-				$asset = new FileAsset($app['resources.locator'], $assetRoot, $app['path.helper']);
-				$asset->setDevMode($app['resources.dev_mode']);
-				
-				return $asset;
-			});
-			
-			$app['resources.asset.js'] = $app->share(function() use($app) {
-				$assetRoot = $app['path.helper']->joinPaths($app['path.resources'], $app['path.resources.js']);
-				
-				$asset = new FileAsset($app['resources.locator'], $assetRoot, $app['path.helper']);
+			$app['resources.asset'] = $app->share(function() use($app) {
+				$asset = new FileAsset($app['resources.locator'], $app['path.resources'], $app['path.helper']);
 				$asset->setDevMode($app['resources.dev_mode']);
 				
 				return $asset;
@@ -90,7 +71,7 @@ namespace BDF2\Resources\Provider
 
 	    public function boot(Application $app)
 	    {
-			$app->mount($app['routes.resources'], $this);
+			$app->mount($app['resources.routes.prefix'], $this);
 	    }
 	}
 	

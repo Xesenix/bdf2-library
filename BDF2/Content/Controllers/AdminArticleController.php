@@ -4,22 +4,17 @@ namespace BDF2\Content\Controllers
 {
 	use Silex\Application;
 	use Symfony\Component\HttpFoundation\Request;
+	use BDF2\Controllers\AbstractController;
 	use BDF2\Content\Entity\Article;
 	use BDF2\Content\Form\Type\ArticleType;
 	
-	class AdminArticleController {
-		
-		public function __construct(Application $app)
-		{
-			$this->app = $app;
-			$this->request = $app['request'];
-		}
+	class AdminArticleController extends AbstractController {
 		
 		public function listAction()
 		{
 			$entityManager = $this->app['orm.em'];
 			
-			return $this->app['twig']->render('article/list.html', array(
+			return $this->render('article/list.html', array(
 				'pageTitle' => 'Lista artykułów',
 				'articles' => $entityManager->getRepository('BDF2\Content\Entity\Article')->findAll()
 			));
@@ -38,11 +33,11 @@ namespace BDF2\Content\Controllers
 				$this->app->abort(404, "Artykuł id:$id nie istnieje.");
 			}
 			
-			$form = $this->app['form.factory']->create(new ArticleType($this->app['form.data_transformer.date_time']), $article);
+			$form = $this->app['content.form']($article);
 			
 			if ($this->request->getMethod() == 'POST')
 			{
-				$form->bind($request);
+				$form->bind($this->request);
 				
 				if ($form->isValid())
 				{
@@ -51,7 +46,7 @@ namespace BDF2\Content\Controllers
 				}
 			}
 			
-			return $this->app['twig']->render('article/edit.html', array(
+			return $this->render('article/edit.html', array(
 				'pageTitle' => 'Edycja artykułu',
 				'form' => $form->createView(),
 			));

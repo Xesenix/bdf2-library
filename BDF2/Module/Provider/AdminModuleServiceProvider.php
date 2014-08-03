@@ -4,29 +4,19 @@ namespace BDF2\Module\Provider
 	use Silex\Application;
 	use Silex\ServiceProviderInterface;
 	use Silex\ControllerProviderInterface;
-	use BDF2\Module\Controllers\ModuleController;
+	use BDF2\Module\Controllers\AdminModuleController;
 	use BDF2\Module\Entity\Module;
+	use BDF2\Module\Form\Type\ModuleType;
 	
-	class ModuleServiceProvider implements ServiceProviderInterface, ControllerProviderInterface {
+	class AdminModuleServiceProvider implements ServiceProviderInterface, ControllerProviderInterface {
 		
 		public function connect(Application $app)
 		{
 			$module = $app['controllers_factory'];
 			
-			$module->match('/position/{position}', 'module.controllers.module_controller:renderPositionAction')->bind('module:position');
-			$module->match('/content/{module}', 'module.controllers.module_controller:renderContentAction')
-				->bind('module:content')
-				->convert('module', function ($module) use($app) {
-					
-					if ($module != null)
-					{
-						$entityManager = $app['orm.em'];
-						
-						return $entityManager->getRepository('BDF2\Module\Entity\Module')->findOneById($module);
-					}
-					
-					return null;
-				});
+			$module->match('/', 'module.controllers.admin_module_controller:dashboardAction')->bind('module:admin:dashboard');
+			$module->match('/install', 'module.controllers.admin_module_controller:installAction')->bind('module:admin:add');
+			$module->match('/module/{id}', 'module.controllers.admin_module_controller:editAction')->bind('module:admin:edit');
 			
 			return $module;
 		}
@@ -40,12 +30,12 @@ namespace BDF2\Module\Provider
 	        }
 			
 			// Setup Controllers
-			$app['module.controllers.module_controller'] = $app->share(function() use($app) {
-				return new ModuleController($app);
+			$app['module.controllers.admin_module_controller'] = $app->share(function() use($app) {
+				return new AdminModuleController($app);
 			});
 						
 			// Setup routing
-			$app['module.routes.prefix'] = '/modules';
+			$app['module.routes.admin_prefix'] = '/modules';
 			
 			// Adding entities to ORM Entity Manager
 			$app['orm.em.paths'] = $app->share($app->extend('orm.em.paths', function ($paths) use ($app) {
@@ -60,16 +50,16 @@ namespace BDF2\Module\Provider
 				
 				return $paths;
 			}));
+			
+			// Setup form
+			$app['module.form'] = $app->protect(function ($module) use($app) {
+				return $app['form.factory']->create(new ModuleType(), $module);
+			});
 		}
 
 	    public function boot(Application $app)
 	    {
-			$app->mount($app['module.routes.prefix'], $this);
-			
-			/*$app->on('twig:render', function() use($app) {
-				
-				$app['twig']->addGlobal('moduleManager', $app['module.manager']);
-			});*/
+			$app->mount($app['module.routes.admin_prefix'], $this);
 	    }
 	}
 }
