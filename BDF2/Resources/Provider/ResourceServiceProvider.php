@@ -1,12 +1,14 @@
 <?php
 namespace BDF2\Resources\Provider
 {
+	use Symfony\Component\Config\FileLocator;
+	use Symfony\Component\Config\Loader\LoaderResolver;
+	use Symfony\Component\Config\Loader\DelegatingLoader;
 	use Silex\Application;
 	use Silex\ServiceProviderInterface;
 	use Silex\ControllerProviderInterface;
 	use BDF2\Resources\PathHelper;
-	use BDF2\Resources\File\FileLocator;
-	use BDF2\Resources\Asset\FileAsset;
+	use BDF2\Resources\Loader\AssetLoader;
 	use BDF2\Resources\Controllers\AssetController;
 	
 	class ResourceServiceProvider implements ServiceProviderInterface, ControllerProviderInterface {
@@ -26,7 +28,7 @@ namespace BDF2\Resources\Provider
 		
 		public function register(Application $app)
 		{
-			$app['resources.dev_mode'] = false;
+			$app['resources.asset.publish_mode'] = false;
 			
 			$app['path.helper'] = $app->share(function() {
 				return new PathHelper();
@@ -46,7 +48,7 @@ namespace BDF2\Resources\Provider
 			$app['resources.path.public'] = '/resources';
 			
 			// file system path to resources directory available to public view
-			$app['path.resources'] = $app->share(function() use($app) {
+			$app['resources.asset.path'] = $app->share(function() use($app) {
 				return $app['path.helper']->joinPaths($app['path.root'], $app['resources.routes.prefix']);
 			});
 			
@@ -56,16 +58,16 @@ namespace BDF2\Resources\Provider
 			});
 			
 			// helper for finding asset sources
-			$app['resources.locator'] = $app->share(function() use($app) {
-				return new FileLocator($app['resources.paths'], $app['path.helper']);
+			$app['resources.asset.locator'] = $app->share(function() use($app) {
+				return new FileLocator($app['resources.paths']);
 			});
 			
-			// helpers for asset manipulation
-			$app['resources.asset'] = $app->share(function() use($app) {
-				$asset = new FileAsset($app['resources.locator'], $app['path.resources'], $app['path.helper']);
-				$asset->setDevMode($app['resources.dev_mode']);
+			// helpers for asset loading
+			$app['resources.asset.loader'] = $app->share(function() use($app) {
+				$loader = new AssetLoader($app['resources.asset.locator'], $app['resources.asset.path'], $app['path.helper']);
+				$loader->publishMode($app['resources.asset.publish_mode']);
 				
-				return $asset;
+				return $loader;
 			});
 		}
 

@@ -59,6 +59,13 @@ namespace BDF2\Content\Provider
 			$app['content.form'] = $app->protect(function ($article) use($app) {
 				return $app['form.factory']->create(new ArticleType($app['form.data_transformer.date_time']), $article);
 			});
+			
+			// Adding view paths
+			$app['twig.path'] = $app->share($app->extend('twig.path', function ($paths) {
+				$paths[] = __DIR__ . '/../views';
+				
+				return $paths;
+			}));
 		}
 
 	    public function boot(Application $app)

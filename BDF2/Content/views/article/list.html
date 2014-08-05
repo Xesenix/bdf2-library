@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+
+{% block mainContent %}
+	<ul>
+		{% for article in articles %}
+		<li>
+			<a href="{{ path('article', {slug: article.slug}) }}">{{ article.title }}</a>
+		</li>
+		{% endfor %}
+	</ul>
+{% endblock %}

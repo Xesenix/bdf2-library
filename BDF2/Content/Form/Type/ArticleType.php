@@ -23,7 +23,7 @@ namespace BDF2\Content\Form\Type
 				->add('title')
 				->add('content', 'textarea')
 				->add('author')
-				->add($builder->create('date', 'text')->addModelTransformer($this->dateTransformer));
+				->add($builder->create('date', 'text', array('attr' => array('class' => 'datapicker')))->addModelTransformer($this->dateTransformer));
 		}
 		
 		public function setDefaultOptions(OptionsResolverInterface $resolver)

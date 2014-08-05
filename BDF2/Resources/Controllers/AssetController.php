@@ -10,9 +10,11 @@ namespace BDF2\Resources\Controllers
 		
 		public function generateAssetAction($file)
 		{
-			$asset = $this->app['resources.asset'];
+			$loader = $this->app['resources.asset.loader'];
 			
-			$path = $asset->publishAsset($file);
+			$loader->publishName($file);
+			
+			$path = $loader->import($file);
 			
 			if ($path === null)
 			{
@@ -26,9 +28,11 @@ namespace BDF2\Resources\Controllers
 		
 		public function generateCssAction($file)
 		{
-			$asset = $this->app['resources.asset'];
+			$loader = $this->app['resources.asset.loader'];
 			
-			$path = $asset->publishAsset($file);
+			$loader->publishName($file);
+			
+			$path = $loader->import($file);
 			
 			if ($path === null)
 			{
@@ -40,9 +44,11 @@ namespace BDF2\Resources\Controllers
 		
 		public function generateJsAction($file)
 		{
-			$asset = $this->app['resources.asset'];
+			$loader = $this->app['resources.asset.loader'];
 			
-			$path = $asset->publishAsset($file);
+			$loader->publishName($file);
+			
+			$path = $loader->import($file);
 			
 			if ($path === null)
 			{
@@ -54,9 +60,9 @@ namespace BDF2\Resources\Controllers
 		
 		public function clearAction($path)
 		{
-			$asset = $this->app['resources.asset'];
+			$asset = $this->app['resources.asset.loader'];
 			
-			$asset->unpublishAssets($path);
+			$asset->unload($path);
 			
 			return '';
 		}

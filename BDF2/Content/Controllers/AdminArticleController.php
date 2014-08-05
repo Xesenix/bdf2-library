@@ -14,7 +14,7 @@ namespace BDF2\Content\Controllers
 		{
 			$entityManager = $this->app['orm.em'];
 			
-			return $this->render('article/list.html', array(
+			return $this->render('admin/article/list.html', array(
 				'pageTitle' => 'Lista artykułów',
 				'articles' => $entityManager->getRepository('BDF2\Content\Entity\Article')->findAll()
 			));
@@ -46,7 +46,7 @@ namespace BDF2\Content\Controllers
 				}
 			}
 			
-			return $this->render('article/edit.html', array(
+			return $this->render('admin/article/edit.html', array(
 				'pageTitle' => 'Edycja artykułu',
 				'form' => $form->createView(),
 			));

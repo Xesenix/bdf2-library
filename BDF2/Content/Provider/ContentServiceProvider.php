@@ -41,6 +41,13 @@ namespace BDF2\Content\Provider
 				
 				return $paths;
 			}));
+			
+			// Adding view paths
+			$app['twig.path'] = $app->share($app->extend('twig.path', function ($paths) {
+				$paths[] = __DIR__ . '/../views';
+				
+				return $paths;
+			}));
 		}
 
 	    public function boot(Application $app)
