@@ -1,12 +1,10 @@
 <?php
-namespace BDF2\Resources
+namespace BDF2\Resources;
+
+class PathHelper
 {
-	class PathHelper {
-		
-		function joinPaths()
-		{
-			return preg_replace('#/+#', '/', join('/', func_get_args()));
-		}
+	function joinPaths() {
+		return preg_replace('#/+#', '/', join('/', func_get_args()));
 	}
-	
+
 }
