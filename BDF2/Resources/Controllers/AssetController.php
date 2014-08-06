@@ -27,7 +27,7 @@ class AssetController extends AbstractController
 	public function generateCssAction($file) {
 		$loader = $this->app['resources.assets.loader'];
 
-		$path = $loader->load($file);
+		$path = $loader->load($file, 'css');
 
 		if ($path === null)
 		{
@@ -40,7 +40,7 @@ class AssetController extends AbstractController
 	public function generateJsAction($file) {
 		$loader = $this->app['resources.assets.loader'];
 
-		$path = $loader->load($file);
+		$path = $loader->load($file, 'js');
 
 		if ($path === null)
 		{

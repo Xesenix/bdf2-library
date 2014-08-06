@@ -8,6 +8,7 @@ use Silex\ServiceProviderInterface;
 use Silex\ControllerProviderInterface;
 use BDF2\Resources\PathHelper;
 use BDF2\Resources\Loader\AssetLoader;
+use BDF2\Resources\Loader\CompositionLoader;
 use BDF2\Resources\Loader\DelegatingLoader;
 use BDF2\Resources\Controllers\AssetController;
 
@@ -62,6 +63,11 @@ class ResourceServiceProvider implements ServiceProviderInterface, ControllerPro
 		$app['resources.assets.resource_dir'] = $app->share(function() {
 			return array();
 		});
+		
+		// asset compositions
+		$app['resources.assets.compositions'] = $app->share(function() use ($app) {
+			return array();
+		});
 
 		// helper for finding asset sources
 		$app['resources.assets.locator'] = $app->share(function() use ($app) {
@@ -70,13 +76,16 @@ class ResourceServiceProvider implements ServiceProviderInterface, ControllerPro
 
 		// helpers for asset loading
 		$app['resources.assets.loader'] = $app->share(function() use ($app) {
+			$compositionLoader = new CompositionLoader($app['resources.assets.compositions'], $app['resources.assets.locator'], $app['resources.assets.public_dir'], $app['tmp_dir'], $app['path.helper']);
+			$compositionLoader->publishMode($app['resources.assets.publish_mode']);
+			
 			$loader = new AssetLoader($app['resources.assets.locator'], $app['resources.assets.public_dir'], $app['path.helper']);
 			$loader->publishMode($app['resources.assets.publish_mode']);
 
-			$loaderResolver = new LoaderResolver( array($loader));
+			$loaderResolver = new LoaderResolver(array($compositionLoader, $loader));
 			$delegatingLoader = new DelegatingLoader($loaderResolver);
 
-			return $loader;
+			return $delegatingLoader;
 		});
 	}
 

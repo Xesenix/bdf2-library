@@ -6,11 +6,13 @@ use Symfony\Component\Config\Loader\Loader;
 use Symfony\Component\Filesystem\Filesystem;
 use BDF2\Resources\PathHelper;
 
-class AssetLoader extends Loader
+class CompositionLoader extends Loader
 {
 	protected $filelocator;
 
 	protected $assetDirectory;
+
+	protected $tmpDirectory;
 
 	protected $pathHelper;
 
@@ -26,9 +28,11 @@ class AssetLoader extends Loader
 	 * @param FileLocatorInterface $filelocator helper for searching asset sources
 	 * @param string $assetDirectory file system path to directory in which all assets are stored in public access area
 	 */
-	public function __construct(FileLocatorInterface $filelocator, $assetDirectory, PathHelper $pathHelper) {
+	public function __construct(array $compositions, FileLocatorInterface $filelocator, $assetDirectory, $tmpDirectory, PathHelper $pathHelper) {
+		$this->compositions = $compositions;
 		$this->locator = $filelocator;
 		$this->assetDirectory = $assetDirectory;
+		$this->tmpDirectory = $tmpDirectory;
 		$this->pathHelper = $pathHelper;
 	}
 
@@ -58,25 +62,38 @@ class AssetLoader extends Loader
 	 */
 	public function load($resource, $type = null) {
 		$publishPath = $this->pathHelper->joinPaths($this->assetDirectory, $resource);
-
-		$resource = $this->locator->locate($resource);
+		$tmpPath = $this->pathHelper->joinPaths($this->tmpDirectory, $resource);
+		$fs = $this->getFilesystem();
+		
+		$fs->dumpFile($tmpPath, "/* --- composition: $resource ---*/");
+		
+		$tmpFile = fopen($tmpPath, "a");
+		
+		foreach ($this->compositions[$resource] as $asset) {
+			$path = $this->locator->locate($asset);
+			fwrite($tmpFile, "\n\n/* --- asset: $asset ($path) ---*/\n\n" . file_get_contents($path));
+		}
+		
+		fclose($tmpFile);
 
 		if ($this->publishMode && $resource !== null)
 		{
-			$this->getFilesystem()->copy($resource, $publishPath);
+			$fs->copy($tmpPath, $publishPath);
 		}
 
-		return $resource;
+		return $tmpPath;
 	}
 
 	public function supports($resource, $type = null) {
-		return true;
+		return !empty($this->compositions[$resource]);
 	}
-
+	
 	public function unload($resource, $type = null) {
-		$assetsPath = $this->pathHelper->joinPaths($this->assetDirectory, $resource);
+		$publishPath = $this->pathHelper->joinPaths($this->assetDirectory, $resource);
+		$tmpPath = $this->pathHelper->joinPaths($this->tmpDirectory, $resource);
 
-		$this->fs->remove($assetsPath);
+		$this->fs->remove($publishPath);
+		$this->fs->remove($tmpPath);
 	}
 
 }
