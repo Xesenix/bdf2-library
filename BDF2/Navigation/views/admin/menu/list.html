@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% block mainContent %}
+	<ul>
+		{% for menu in menus %}
+		<li>
+			<a href="{{ path('navigation:admin:menu:edit', {id: menu.id}) }}">{{ menu.name }}</a>
+		</li>
+		{% endfor %}
+		<li>
+			<a href="{{ path('navigation:admin:menu:add') }}">Dodaj menu</a>
+		</li>
+	</ul>
+{% endblock %}

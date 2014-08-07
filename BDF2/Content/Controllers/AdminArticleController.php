@@ -25,14 +25,14 @@ class AdminArticleController extends AbstractController
 
 		$id = $this->request->get('id');
 
-		$article = $entityManager->getRepository('BDF2\Content\Entity\Article')->findOneBy(array('id' => $id));
+		$article = $entityManager->getRepository('BDF2\Content\Entity\Article')->findOneById($id);
 
 		if ($article == null)
 		{
 			$this->app->abort(404, "Artykuł id:$id nie istnieje.");
 		}
 
-		$form = $this->app['content.form']($article);
+		$form = $this->app['content.article.form']($article);
 
 		if ($this->request->getMethod() == 'POST')
 		{

@@ -55,7 +55,7 @@ class AdminContentServiceProvider implements ServiceProviderInterface, Controlle
 		}));
 
 		// Setup form
-		$app['content.form'] = $app->protect(function($article) use ($app) {
+		$app['content.article.form'] = $app->protect(function($article) use ($app) {
 			return $app['form.factory']->create(new ArticleType($app['form.data_transformer.date_time']), $article);
 		});
 
