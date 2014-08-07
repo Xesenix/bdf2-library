@@ -12,8 +12,6 @@ class CompositionLoader extends Loader
 
 	protected $assetDirectory;
 
-	protected $tmpDirectory;
-
 	protected $pathHelper;
 
 	protected $locator = null;
@@ -28,11 +26,10 @@ class CompositionLoader extends Loader
 	 * @param FileLocatorInterface $filelocator helper for searching asset sources
 	 * @param string $assetDirectory file system path to directory in which all assets are stored in public access area
 	 */
-	public function __construct(array $compositions, FileLocatorInterface $filelocator, $assetDirectory, $tmpDirectory, PathHelper $pathHelper) {
+	public function __construct(array $compositions, FileLocatorInterface $filelocator, $assetDirectory, PathHelper $pathHelper) {
 		$this->compositions = $compositions;
 		$this->locator = $filelocator;
 		$this->assetDirectory = $assetDirectory;
-		$this->tmpDirectory = $tmpDirectory;
 		$this->pathHelper = $pathHelper;
 	}
 
@@ -62,7 +59,8 @@ class CompositionLoader extends Loader
 	 */
 	public function load($resource, $type = null) {
 		$publishPath = $this->pathHelper->joinPaths($this->assetDirectory, $resource);
-		$tmpPath = $this->pathHelper->joinPaths($this->tmpDirectory, $resource);
+		$tmpPath = $this->pathHelper->joinPaths(sys_get_temp_dir(), $resource);
+		
 		$fs = $this->getFilesystem();
 		
 		$fs->dumpFile($tmpPath, "/* --- composition: $resource ---*/");
@@ -71,7 +69,24 @@ class CompositionLoader extends Loader
 		
 		foreach ($this->compositions[$resource] as $asset) {
 			$path = $this->locator->locate($asset);
-			fwrite($tmpFile, "\n\n/* --- asset: $asset ($path) ---*/\n\n" . file_get_contents($path));
+			
+			switch ($type)
+			{
+				case 'css':
+					if (preg_match('/\.min\.css/', $asset))
+					{
+						$content = file_get_contents($path);
+					}
+					else
+					{
+						$content = \CssMin::minify(file_get_contents($path));
+					}
+					break;
+				default:
+					$content = file_get_contents($path);
+			}
+			
+			fwrite($tmpFile, "\n\n/* --- asset: $asset ($path) ---*/\n\n" . $content);
 		}
 		
 		fclose($tmpFile);

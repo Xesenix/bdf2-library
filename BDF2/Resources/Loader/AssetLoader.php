@@ -58,15 +58,37 @@ class AssetLoader extends Loader
 	 */
 	public function load($resource, $type = null) {
 		$publishPath = $this->pathHelper->joinPaths($this->assetDirectory, $resource);
-
-		$resource = $this->locator->locate($resource);
+		$tmpPath = $this->pathHelper->joinPaths(sys_get_temp_dir(), $resource);
+		
+		$path = $this->locator->locate($resource);
+		
+		$fs = $this->getFilesystem();
+		$fs->dumpFile($tmpPath, null);
+		
+		switch ($type)
+		{
+			case 'css':
+				// minify only if it isnt already minified
+				if (preg_match('/\.min\.css/', $resource))
+				{
+					$content = file_get_contents($path);
+				}
+				else {
+					$content = \CssMin::minify(file_get_contents($path));
+				}
+				break;
+			default:
+				$content = file_get_contents($path);
+		}
+		
+		file_put_contents($tmpPath, $content);
 
 		if ($this->publishMode && $resource !== null)
 		{
-			$this->getFilesystem()->copy($resource, $publishPath);
+			$fs->copy($tmpPath, $publishPath);
 		}
 
-		return $resource;
+		return $tmpPath;
 	}
 
 	public function supports($resource, $type = null) {

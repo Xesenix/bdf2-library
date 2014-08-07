@@ -76,7 +76,7 @@ class ResourceServiceProvider implements ServiceProviderInterface, ControllerPro
 
 		// helpers for asset loading
 		$app['resources.assets.loader'] = $app->share(function() use ($app) {
-			$compositionLoader = new CompositionLoader($app['resources.assets.compositions'], $app['resources.assets.locator'], $app['resources.assets.public_dir'], $app['tmp_dir'], $app['path.helper']);
+			$compositionLoader = new CompositionLoader($app['resources.assets.compositions'], $app['resources.assets.locator'], $app['resources.assets.public_dir'], $app['path.helper']);
 			$compositionLoader->publishMode($app['resources.assets.publish_mode']);
 			
 			$loader = new AssetLoader($app['resources.assets.locator'], $app['resources.assets.public_dir'], $app['path.helper']);
