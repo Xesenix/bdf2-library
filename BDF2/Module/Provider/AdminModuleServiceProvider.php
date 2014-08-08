@@ -15,8 +15,10 @@ class AdminModuleServiceProvider implements ServiceProviderInterface, Controller
 		$module = $app['controllers_factory'];
 
 		$module->match('/', 'module.controllers.admin_module_controller:dashboardAction')->bind('module:admin:dashboard');
-		$module->match('/install', 'module.controllers.admin_module_controller:installAction')->bind('module:admin:add');
-		$module->match('/module/{id}', 'module.controllers.admin_module_controller:editAction')->bind('module:admin:edit');
+		$module->match('/modules', 'module.controllers.admin_module_controller:listAction')->bind('module:admin:module:list');
+		$module->match('/module/add', 'module.controllers.admin_module_controller:addAction')->bind('module:admin:module:add');
+		$module->match('/module/remove/{id}', 'module.controllers.admin_module_controller:removeAction')->bind('module:admin:module:remove');
+		$module->match('/module/{id}', 'module.controllers.admin_module_controller:editAction')->bind('module:admin:module:edit');
 
 		return $module;
 	}
@@ -51,7 +53,7 @@ class AdminModuleServiceProvider implements ServiceProviderInterface, Controller
 		}));
 
 		// Setup form
-		$app['module.form'] = $app->protect(function($module) use ($app) {
+		$app['module.module.form'] = $app->protect(function($module) use ($app) {
 			return $app['form.factory']->create(new ModuleType(), $module);
 		});
 	}

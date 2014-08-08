@@ -15,6 +15,7 @@ class AdminNavigationServiceProvider implements ServiceProviderInterface, Contro
 
 		$module->match('/menus', 'navigation.controllers.admin_menu_controller:listAction')->bind('navigation:admin:menu:list');
 		$module->match('/menu/add', 'navigation.controllers.admin_menu_controller:addAction')->bind('navigation:admin:menu:add');
+		$module->match('/menu/remove/{id}', 'navigation.controllers.admin_menu_controller:removeAction')->bind('navigation:admin:menu:remove');
 		$module->match('/menu/{id}', 'navigation.controllers.admin_menu_controller:editAction')->bind('navigation:admin:menu:edit');
 
 		return $module;

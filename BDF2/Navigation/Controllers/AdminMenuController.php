@@ -26,14 +26,14 @@ class AdminMenuController extends AbstractController {
 
 		$id = $this->request->get('id');
 
-		$menu = $entityManager->getRepository('BDF2\Navigation\Entity\Menu')->findOneById($id);
+		$resource = $entityManager->getRepository('BDF2\Navigation\Entity\Menu')->findOneById($id);
 
-		if ($menu == null)
+		if ($resource == null)
 		{
 			$this->app->abort(404, "Artykuł id:$id nie istnieje.");
 		}
 
-		$form = $this->app['navigation.menu.form']($menu);
+		$form = $this->app['navigation.menu.form']($resource);
 
 		if ($this->request->getMethod() == 'POST')
 		{
@@ -41,7 +41,7 @@ class AdminMenuController extends AbstractController {
 
 			if ($form->isValid())
 			{
-				$entityManager->persist($menu);
+				$entityManager->persist($resource);
 				$entityManager->flush();
 			}
 		}
@@ -56,9 +56,9 @@ class AdminMenuController extends AbstractController {
 	{
 		$entityManager = $this->app['orm.em'];
 		
-		$menu = new Menu();
+		$resource = new Menu();
 		
-		$form = $this->app['navigation.menu.form']($menu);
+		$form = $this->app['navigation.menu.form']($resource);
 		
 		if ($this->request->getMethod() == 'POST')
 		{
@@ -66,8 +66,10 @@ class AdminMenuController extends AbstractController {
 
 			if ($form->isValid())
 			{
-				$entityManager->persist($menu);
+				$entityManager->persist($resource);
 				$entityManager->flush();
+				
+				return $this->app->redirect($this->app['url_generator']->generate('navigation:admin:menu:edit', array('id' => $resource->id)));
 			}
 		}
 		
@@ -75,5 +77,17 @@ class AdminMenuController extends AbstractController {
 			'pageTitle' => 'Dodaj menu',
 			'form' => $form->createView(),
 		));
+	}
+	
+	public function removeAction($id)
+	{
+		$entityManager = $this->app['orm.em'];
+		
+		$resource = $entityManager->getRepository('BDF2\Navigation\Entity\Menu')->findOneById($id);
+		
+		$entityManager->remove($resource);
+		$entityManager->flush();
+		
+		return $this->app->redirect($this->app['url_generator']->generate('navigation:admin:menu:list'));
 	}
 }

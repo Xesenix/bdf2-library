@@ -4,7 +4,7 @@
 	<ul>
 		{% for menu in menus %}
 		<li>
-			<a href="{{ path('navigation:admin:menu:edit', {id: menu.id}) }}">{{ menu.name }}</a>
+			<a href="{{ path('navigation:admin:menu:edit', {id: menu.id}) }}">{{ menu.name }}</a> (<a href="{{ path('navigation:admin:menu:remove', {id: menu.id}) }}">usuń</a>)
 		</li>
 		{% endfor %}
 		<li>

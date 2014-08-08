@@ -14,8 +14,10 @@ class AdminContentServiceProvider implements ServiceProviderInterface, Controlle
 	public function connect(Application $app) {
 		$module = $app['controllers_factory'];
 
-		$module->match('/', 'content.controllers.admin_article_controller:listAction')->bind('articles');
-		$module->match('/article/{id}', 'content.controllers.admin_article_controller:editAction')->bind('article');
+		$module->match('/articles', 'content.controllers.admin_article_controller:listAction')->bind('content:admin:article:list');
+		$module->match('/article/add', 'content.controllers.admin_article_controller:addAction')->bind('content:admin:article:add');
+		$module->match('/article/remove/{id}', 'content.controllers.admin_article_controller:removeAction')->bind('content:admin:article:remove');
+		$module->match('/article/{id}', 'content.controllers.admin_article_controller:editAction')->bind('content:admin:article:edit');
 
 		return $module;
 	}
@@ -33,7 +35,7 @@ class AdminContentServiceProvider implements ServiceProviderInterface, Controlle
 		});
 
 		// Setup routing
-		$app['content.routes.admin_prefix'] = '/articles';
+		$app['content.routes.admin_prefix'] = '/content';
 
 		/*$app['form.extensions'] = $app->share($app->extend('form.extensions', function ($extensions) use ($app) {
 		 $extensions[] = new ArticleType();

@@ -1,5 +1,5 @@
 {% block modules %}
 	{% for module in modules %}
-		<div class="box">{{ render(url(module.route, { module: module.id })) }}</div>
+		<div class="{{ app.request.get('box-class') | default('box') }}">{{ render(url(module.route, { module: module.id, position: app.request.get('position'), options: app.request.query.all() })) }}</div>
 	{% endfor %}
 {% endblock %}

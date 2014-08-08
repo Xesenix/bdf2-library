@@ -4,11 +4,11 @@
 	<ul>
 		{% for module in modules %}
 		<li>
-			<a href="{{ path('module:admin:edit', {id: module.id}) }}">{{ module.name }}</a>
+			<a href="{{ path('module:admin:module:edit', { id: module.id }) }}">{{ module.name }}</a>
 		</li>
 		{% endfor %}
 		<li>
-			<a href="{{ path('module:admin:add') }}">
+			<a href="{{ path('module:admin:module:add') }}">
 				Instaluj moduł
 			</a>
 		</li>

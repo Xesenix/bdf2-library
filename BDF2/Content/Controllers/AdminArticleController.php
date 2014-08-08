@@ -25,14 +25,14 @@ class AdminArticleController extends AbstractController
 
 		$id = $this->request->get('id');
 
-		$article = $entityManager->getRepository('BDF2\Content\Entity\Article')->findOneById($id);
+		$resource = $entityManager->getRepository('BDF2\Content\Entity\Article')->findOneById($id);
 
-		if ($article == null)
+		if ($resource == null)
 		{
 			$this->app->abort(404, "Artykuł id:$id nie istnieje.");
 		}
 
-		$form = $this->app['content.article.form']($article);
+		$form = $this->app['content.article.form']($resource);
 
 		if ($this->request->getMethod() == 'POST')
 		{
@@ -40,7 +40,7 @@ class AdminArticleController extends AbstractController
 
 			if ($form->isValid())
 			{
-				$entityManager->persist($article);
+				$entityManager->persist($resource);
 				$entityManager->flush();
 			}
 		}
@@ -50,5 +50,43 @@ class AdminArticleController extends AbstractController
 			'form' => $form->createView(),
 		));
 	}
+	
+	public function addAction()
+	{
+		$entityManager = $this->app['orm.em'];
+		
+		$resource = new Article();
+		
+		$form = $this->app['content.article.form']($resource);
+		
+		if ($this->request->getMethod() == 'POST')
+		{
+			$form->bind($this->request);
 
+			if ($form->isValid())
+			{
+				$entityManager->persist($resource);
+				$entityManager->flush();
+				
+				return $this->app->redirect($this->app['url_generator']->generate('content:admin:article:edit', array('id' => $resource->getId())));
+			}
+		}
+		
+		return $this->render('admin/article/edit.html', array(
+			'pageTitle' => 'Dodaj artykuł',
+			'form' => $form->createView(),
+		));
+	}
+	
+	public function removeAction($id)
+	{
+		$entityManager = $this->app['orm.em'];
+		
+		$resource = $entityManager->getRepository('BDF2\Content\Entity\Article')->findOneById($id);
+		
+		$entityManager->remove($resource);
+		$entityManager->flush();
+		
+		return $this->app->redirect($this->app['url_generator']->generate('content:admin:article:list'));
+	}
 }

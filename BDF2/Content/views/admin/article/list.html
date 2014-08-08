@@ -4,8 +4,11 @@
 	<ul>
 		{% for article in articles %}
 		<li>
-			<a href="{{ path('article', {id: article.id}) }}">{{ article.title }}</a>
+			<a href="{{ path('content:admin:article:edit', {id: article.id}) }}">{{ article.title }}</a> (<a href="{{ path('content:admin:article:remove', {id: article.id}) }}">usuń</a>)
 		</li>
 		{% endfor %}
+		<li>
+			<a href="{{ path('content:admin:article:add') }}">Dodaj artykuł</a>
+		</li>
 	</ul>
 {% endblock %}

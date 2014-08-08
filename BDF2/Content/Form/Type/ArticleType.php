@@ -19,10 +19,10 @@ class ArticleType extends AbstractType
 		$form = $builder->add('id', 'hidden')
 			->add('slug')
 			->add('title')
-			->add('content', 'textarea')
-			->add('author')
+			->add('content', 'textarea', array('required' => false))
+			->add('author', 'text', array('required' => false))
 			->add(
-				$builder->create('date', 'text', array('attr' => array('class' => 'datapicker')))
+				$builder->create('date', 'text', array('attr' => array('class' => 'datapicker', 'required' => false,)))
 				->addModelTransformer($this->dateTransformer)
 			);
 	}
