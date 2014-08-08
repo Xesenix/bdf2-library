@@ -1,9 +1,5 @@
 {% extends "layout.html" %}
 
 {% block mainContent %}
-	<form action="#" method="post" novalidate="">
-		{{ form_widget(form) }}
-
-    	<input type="submit" name="submit" />
-	</form>
+	{{ form(form) }}
 {% endblock %}

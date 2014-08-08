@@ -13,7 +13,12 @@ class DateTime implements DataTransformerInterface
 	}
 
 	public function transform($dataTime) {
-		return $dataTime->format($this->format);
+		if ($dataTime !== null)
+		{
+			return $dataTime->format($this->format);
+		}
+		
+		return null;
 	}
 
 	public function reverseTransform($text) {
