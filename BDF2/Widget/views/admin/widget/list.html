@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% block mainContent %}
+	<ul>
+		{% for widget in widgets %}
+		<li>
+			<a href="{{ path('widget:admin:widget:edit', { id: widget.id }) }}">{{ widget.name }}</a> (<a href="{{ path('widget:admin:widget:remove', { id: widget.id }) }}">usuń</a>)
+		</li>
+		{% endfor %}
+		<li>
+			<a href="{{ path('widget:admin:widget:add') }}">Dodaj moduł</a>
+		</li>
+	</ul>
+{% endblock %}

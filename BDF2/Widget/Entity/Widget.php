@@ -1,13 +1,13 @@
 <?php
-namespace BDF2\Module\Entity;
+namespace BDF2\Widget\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="module")
+ * @ORM\Table(name="widget")
  **/
-class Module
+class Widget
 {
 
 	/**
@@ -32,5 +32,5 @@ class Module
 	 */
 	public $content;
 
-	public $route = 'module:content';
+	public $route = 'widget:content';
 }

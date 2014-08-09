@@ -1,25 +1,25 @@
 <?php
-namespace BDF2\Module\Provider;
+namespace BDF2\Widget\Provider;
 
 use Silex\Application;
 use Silex\ServiceProviderInterface;
 use Silex\ControllerProviderInterface;
-use BDF2\Module\Controllers\ModuleController;
-use BDF2\Module\Entity\Module;
+use BDF2\Widget\Controllers\WidgetController;
+use BDF2\Widget\Entity\Widget;
 
-class ModuleServiceProvider implements ServiceProviderInterface, ControllerProviderInterface
+class WidgetServiceProvider implements ServiceProviderInterface, ControllerProviderInterface
 {
 
 	public function connect(Application $app) {
 		$module = $app['controllers_factory'];
 
-		$module->match('/position/{position}', 'module.controllers.module_controller:renderPositionAction')->bind('module:position');
-		$module->match('/content/{module}', 'module.controllers.module_controller:renderContentAction')->bind('module:content')->convert('module', function($module) use ($app) {
-			if ($module != null)
+		$module->match('/position/{position}', 'widget.controllers.widget_controller:renderPositionAction')->bind('widget:position');
+		$module->match('/content/{widget}', 'widget.controllers.widget_controller:renderContentAction')->bind('widget:content')->convert('widget', function($widget) use ($app) {
+			if ($widget != null)
 			{
 				$entityManager = $app['orm.em'];
 
-				return $entityManager->getRepository('BDF2\Module\Entity\Module')->findOneById($module);
+				return $entityManager->getRepository('BDF2\Widget\Entity\Widget')->findOneById($widget);
 			}
 
 			return null;
@@ -36,12 +36,12 @@ class ModuleServiceProvider implements ServiceProviderInterface, ControllerProvi
 		}
 
 		// Setup Controllers
-		$app['module.controllers.module_controller'] = $app->share(function() use ($app) {
-			return new ModuleController($app);
+		$app['widget.controllers.widget_controller'] = $app->share(function() use ($app) {
+			return new WidgetController($app);
 		});
 
 		// Setup routing
-		$app['module.routes.prefix'] = '/modules';
+		$app['widget.routes.prefix'] = '/widgets';
 
 		// Adding entities to ORM Entity Manager
 		$app['orm.em.paths'] = $app->share($app->extend('orm.em.paths', function($paths) use ($app) {
@@ -59,11 +59,11 @@ class ModuleServiceProvider implements ServiceProviderInterface, ControllerProvi
 	}
 
 	public function boot(Application $app) {
-		$app->mount($app['module.routes.prefix'], $this);
+		$app->mount($app['widget.routes.prefix'], $this);
 
 		/*$app->on('twig:render', function() use($app) {
 
-		 $app['twig']->addGlobal('moduleManager', $app['module.manager']);
+		 $app['twig']->addGlobal('widgetManager', $app['widget.manager']);
 		 });*/
 	}
 

@@ -1,0 +1,5 @@
+{% block widgets %}
+	{% for widget in widgets %}
+		<div class="{{ app.request.get('box-class') | default('box') }}">{{ render(url(widget.route, { widget: widget.id, position: app.request.get('position'), options: app.request.query.all() })) }}</div>
+	{% endfor %}
+{% endblock %}
