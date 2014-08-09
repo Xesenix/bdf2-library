@@ -1,14 +1,23 @@
 <?php
 namespace BDF2\Navigation\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
+
 /**
- * @Entity @Table(name="menu")
- **/
+ * @ORM\Entity 
+ * @ORM\Table(name="menu")
+ */
 class Menu {
 	
-	/** @Id @Column(type="integer") @GeneratedValue **/
+	/**
+	 * @ORM\Id 
+	 * @ORM\Column(type="integer")
+	 * @ORM\GeneratedValue 
+	 */
 	public $id;
 
-	/** @Column(type="string") **/
+	/** 
+	 * @ORM\Column(type="string")
+	 */
 	public $name;
 }

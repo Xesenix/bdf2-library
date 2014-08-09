@@ -1,22 +1,35 @@
 <?php
 namespace BDF2\Module\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
+
 /**
- * @Entity @Table(name="module")
+ * @ORM\Entity
+ * @ORM\Table(name="module")
  **/
 class Module
 {
 
-	/** @Id @Column(type="integer") @GeneratedValue **/
+	/**
+	 * @ORM\Id
+	 * @ORM\Column(type="integer")
+	 * @ORM\GeneratedValue
+	 */
 	public $id;
 
-	/** @Column(type="string") **/
+	/** 
+	 * @ORM\Column(type="string")
+	 */
 	public $name;
 
-	/** @Column(type="string") **/
+	/** 
+	 * @ORM\Column(type="string")
+	 */
 	public $position;
 
-	/** @Column(type="text") **/
+	/**
+	 * @ORM\Column(type="text")
+	 */
 	public $content;
 
 	public $route = 'module:content';

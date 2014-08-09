@@ -1,30 +1,53 @@
 <?php
 
 namespace BDF2\Content\Entity;
+use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
- * @Entity @Table(name="articles")
- **/
+ * @Gedmo\Loggable
+ * @ORM\Entity
+ * @ORM\Table(name="articles")
+ */
 class Article
 {
 
-	/** @Id @Column(type="integer") @GeneratedValue **/
+	/** 
+	 * @ORM\Id 
+	 * @ORM\Column(type="integer") 
+	 * @ORM\GeneratedValue(strategy="IDENTITY")
+	 */
 	protected $id;
 
-	/** @Column(type="string") **/
+	/** 
+	 * @Gedmo\Versioned
+	 * @ORM\Column(type="string")
+	 */
 	protected $slug;
 
-	/** @Column(type="string") **/
+	/** 
+	 * @Gedmo\Versioned
+	 * @ORM\Column(type="string")
+	 */
 	protected $title;
 
-	/** @Column(type="text") **/
+	/** 
+	 * @Gedmo\Versioned
+	 * @ORM\Column(type="text")
+	 */
 	protected $content;
 
-	/** @Column(type="string") **/
+	/** 
+	 * @Gedmo\Versioned
+	 * @ORM\Column(type="string")
+	 */
 	protected $author;
 
-	/** @Column(type="date") **/
+	/** 
+	 * @ORM\Column(type="date") 
+	 */
 	protected $date;
+	
 
 	public function setId($id) {
 		$this->id = $id;
