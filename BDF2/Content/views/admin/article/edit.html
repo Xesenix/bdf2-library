@@ -1,5 +1,25 @@
 {% extends "layout.html" %}
 
 {% block mainContent %}
-	{{ form(form) }}
+{{ parent() }}
+
+<div class="container-fluid">
+	<ul class="nav nav-tabs" role="tablist">
+		<li class="active"><a href="#edycja" data-toggle="tab">Edycja</a></li>
+		{% if article -%}
+			<li><a href="#historia" data-toggle="tab">Historia</a></li>
+		{%- endif %}
+	</ul>
+	
+	<div class="tab-content">
+		<div id="edycja" class="tab-pane active">
+			{{ form(form) }}
+		</div>
+		{% if article -%}
+		<div id="historia" class="tab-pane">
+			{{ render(url('content:admin:article:history', { resource: article.id })) }}
+		</div>
+		{%- endif %}
+	</div>
+</div>
 {% endblock %}

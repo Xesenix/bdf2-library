@@ -20,18 +20,13 @@ class AdminArticleController extends AbstractController
 		));
 	}
 
-	public function editAction() {
-		$entityManager = $this->app['orm.em'];
-
-		$id = $this->request->get('id');
-
-		$resource = $entityManager->getRepository('BDF2\Content\Entity\Article')->findOneById($id);
-
+	public function editAction($resource) {
+		
 		if ($resource == null)
 		{
-			$this->app->abort(404, "Artykuł id:$id nie istnieje.");
+			$this->app->abort(404, "Artykuł nie istnieje.");
 		}
-
+		
 		$form = $this->app['content.article.form']($resource);
 
 		if ($this->request->getMethod() == 'POST')
@@ -40,14 +35,18 @@ class AdminArticleController extends AbstractController
 
 			if ($form->isValid())
 			{
+				$entityManager = $this->app['orm.em'];
 				$entityManager->persist($resource);
 				$entityManager->flush();
+				
+				return $this->app->redirect($this->app['url_generator']->generate('content:admin:article:edit', array('resource' => $resource->getId())));
 			}
 		}
 
 		return $this->render('admin/article/edit.html', array(
 			'pageTitle' => 'Edycja artykułu',
 			'form' => $form->createView(),
+			'article' => $resource,
 		));
 	}
 	
@@ -68,7 +67,7 @@ class AdminArticleController extends AbstractController
 				$entityManager->persist($resource);
 				$entityManager->flush();
 				
-				return $this->app->redirect($this->app['url_generator']->generate('content:admin:article:edit', array('id' => $resource->getId())));
+				return $this->app->redirect($this->app['url_generator']->generate('content:admin:article:edit', array('resource' => $resource->getId())));
 			}
 		}
 		
@@ -78,15 +77,36 @@ class AdminArticleController extends AbstractController
 		));
 	}
 	
-	public function removeAction($id)
+	public function removeAction($resource)
 	{
 		$entityManager = $this->app['orm.em'];
-		
-		$resource = $entityManager->getRepository('BDF2\Content\Entity\Article')->findOneById($id);
 		
 		$entityManager->remove($resource);
 		$entityManager->flush();
 		
 		return $this->app->redirect($this->app['url_generator']->generate('content:admin:article:list'));
+	}
+	
+	public function historyAction($resource) {
+		$entityManager = $this->app['orm.em'];
+		
+		$repo = $entityManager->getRepository('Gedmo\Loggable\Entity\LogEntry');
+		$logs = $repo->getLogEntries($resource);
+		
+		return $this->render('admin/article/history.html', array(
+			'pageTitle' => 'Historia zmian artykułu',
+			'history' => $logs,
+		));
+	}
+	
+	public function revertAction($resource, $version) {
+		$entityManager = $this->app['orm.em'];
+		
+		$repo = $entityManager->getRepository('Gedmo\Loggable\Entity\LogEntry');
+		$repo->revert($resource, $version);
+		
+		$this->app['twig']->addGlobal('message', "Dane artykułu zostały wczytane z wersji v{$version} jeśli chcesz przywrócić artykuł w tej postaci wciśnij zapisz.");
+		
+		return $this->editAction($resource);
 	}
 }

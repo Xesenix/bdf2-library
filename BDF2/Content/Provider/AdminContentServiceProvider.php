@@ -16,9 +16,11 @@ class AdminContentServiceProvider implements ServiceProviderInterface, Controlle
 
 		$module->match('/articles', 'content.controllers.admin_article_controller:listAction')->bind('content:admin:article:list');
 		$module->match('/article/add', 'content.controllers.admin_article_controller:addAction')->bind('content:admin:article:add');
-		$module->match('/article/remove/{id}', 'content.controllers.admin_article_controller:removeAction')->bind('content:admin:article:remove');
-		$module->match('/article/{id}', 'content.controllers.admin_article_controller:editAction')->bind('content:admin:article:edit');
-
+		$module->match('/article/history/{resource}', 'content.controllers.admin_article_controller:historyAction')->bind('content:admin:article:history');
+		$module->match('/article/remove/{resource}', 'content.controllers.admin_article_controller:removeAction')->bind('content:admin:article:remove');
+		$module->match('/article/{resource}/{version}', 'content.controllers.admin_article_controller:revertAction')->bind('content:admin:article:revert');
+		$module->match('/article/{resource}', 'content.controllers.admin_article_controller:editAction')->bind('content:admin:article:edit');
+		$module->convert('resource', $app['content.article.provider']);
 		return $module;
 	}
 
@@ -37,6 +39,17 @@ class AdminContentServiceProvider implements ServiceProviderInterface, Controlle
 		// Setup routing
 		$app['content.routes.admin_prefix'] = '/content';
 
+		$app['content.article.provider'] = $app->protect(function($id) use ($app) {
+			if ($id != null)
+			{
+				$entityManager = $app['orm.em'];
+
+				return $entityManager->getRepository('BDF2\Content\Entity\Article')->findOneById($id);
+			}
+
+			return null;
+		});
+		
 		/*$app['form.extensions'] = $app->share($app->extend('form.extensions', function ($extensions) use ($app) {
 		 $extensions[] = new ArticleType();
 
