@@ -5,7 +5,7 @@
 	
 	<ul class="nav nav-tabs" role="tablist">
 		<li class="active"><a href="#edycja" data-toggle="tab">Edycja</a></li>
-		{% if article -%}
+		{% if article is defined -%}
 			<li><a href="#historia" data-toggle="tab">Historia</a></li>
 		{%- endif %}
 	</ul>
@@ -14,9 +14,9 @@
 		<div id="edycja" class="tab-pane active">
 			{{ form(form) }}
 		</div>
-		{% if article -%}
+		{% if article is defined -%}
 		<div id="historia" class="tab-pane">
-			{{ render(url('content_admin:article:history', { resource: article.id })) }}
+			{{ render(url('article_admin:history', { resource: article.id })) }}
 		</div>
 		{%- endif %}
 	</div>

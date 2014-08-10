@@ -27,7 +27,7 @@ class AdminArticleController extends AbstractController
 			$this->app->abort(404, "Artykuł nie istnieje.");
 		}
 		
-		$form = $this->app['content_admin.article.form']($resource);
+		$form = $this->app['article_admin.resource_form']($resource);
 
 		if ($this->request->getMethod() == 'POST')
 		{
@@ -39,7 +39,7 @@ class AdminArticleController extends AbstractController
 				$entityManager->persist($resource);
 				$entityManager->flush();
 				
-				return $this->app->redirect($this->app['url_generator']->generate('content_admin:article:edit', array('resource' => $resource->getId())));
+				return $this->app->redirect($this->app['url_generator']->generate('article_admin:edit', array('resource' => $resource->getId())));
 			}
 		}
 
@@ -56,7 +56,7 @@ class AdminArticleController extends AbstractController
 		
 		$resource = new Article();
 		
-		$form = $this->app['content_admin.article.form']($resource);
+		$form = $this->app['article_admin.resource_form']($resource);
 		
 		if ($this->request->getMethod() == 'POST')
 		{
@@ -67,7 +67,7 @@ class AdminArticleController extends AbstractController
 				$entityManager->persist($resource);
 				$entityManager->flush();
 				
-				return $this->app->redirect($this->app['url_generator']->generate('content_admin:article:edit', array('resource' => $resource->getId())));
+				return $this->app->redirect($this->app['url_generator']->generate('article_admin:edit', array('resource' => $resource->getId())));
 			}
 		}
 		
@@ -84,7 +84,7 @@ class AdminArticleController extends AbstractController
 		$entityManager->remove($resource);
 		$entityManager->flush();
 		
-		return $this->app->redirect($this->app['url_generator']->generate('content_admin:article:list'));
+		return $this->app->redirect($this->app['url_generator']->generate('article_admin:list'));
 	}
 	
 	public function historyAction($resource) {

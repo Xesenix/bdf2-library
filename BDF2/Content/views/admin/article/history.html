@@ -49,7 +49,7 @@
 			<td>{{ log.loggedAt|date(app['date_time.default_format']) }}</td>
 			<td>
 				<div class="btn-group">
-					<a class="btn btn-primary" href="{{ url('content_admin:article:revert', { resource: log.objectId, version: log.version }) }}">Przywróć</a>
+					<a class="btn btn-primary" href="{{ url('article_admin:revert', { resource: log.objectId, version: log.version }) }}">Przywróć</a>
 				</div>
 			</td>
 		</tr>

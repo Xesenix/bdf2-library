@@ -5,11 +5,11 @@
 	<ul>
 		{% for article in articles %}
 		<li>
-			<a href="{{ path('content_admin:article:edit', {resource: article.id}) }}">{{ article.title }}</a> (<a href="{{ path('content_admin:article:remove', {resource: article.id}) }}">usuń</a>)
+			<a href="{{ path('article_admin:edit', {resource: article.id}) }}">{{ article.title }}</a> (<a href="{{ path('article_admin:remove', {resource: article.id}) }}">usuń</a>)
 		</li>
 		{% endfor %}
 		<li>
-			<a href="{{ path('content_admin:article:add') }}">Dodaj artykuł</a>
+			<a href="{{ path('article_admin:add') }}">Dodaj artykuł</a>
 		</li>
 	</ul>
 {% endblock %}
