@@ -8,7 +8,7 @@ use BDF2\Controllers\AbstractController;
 use BDF2\Content\Entity\Article;
 use BDF2\Content\Form\Type\ArticleType;
 
-class AdminArticleController extends AbstractController
+class AdminCategoryController extends AbstractController
 {
 
 	public function listAction() {

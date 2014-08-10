@@ -1,9 +1,8 @@
 {% extends "layout.html" %}
 
 {% block mainContent %}
-{{ parent() }}
-
-<div class="container-fluid">
+	{{ parent() }}
+	
 	<ul class="nav nav-tabs" role="tablist">
 		<li class="active"><a href="#edycja" data-toggle="tab">Edycja</a></li>
 		{% if article -%}
@@ -17,9 +16,9 @@
 		</div>
 		{% if article -%}
 		<div id="historia" class="tab-pane">
-			{{ render(url('content:admin:article:history', { resource: article.id })) }}
+			{{ render(url('content_admin:article:history', { resource: article.id })) }}
 		</div>
 		{%- endif %}
 	</div>
-</div>
+
 {% endblock %}

@@ -7,24 +7,89 @@ use Silex\ServiceProviderInterface;
 use Silex\ControllerProviderInterface;
 use BDF2\Content\Form\Type\ArticleType;
 use BDF2\Content\Controllers\AdminArticleController;
+use BDF2\Content\Form\Type\CategoryType;
+use BDF2\Content\Controllers\AdminCategoryController;
 
 class AdminContentServiceProvider implements ServiceProviderInterface, ControllerProviderInterface
 {
-
+	protected $app = null;
+	
+	protected $moduleName = 'content_admin';
+	
+	protected $moduleResources = array('article', 'category');
+	
 	public function connect(Application $app) {
 		$module = $app['controllers_factory'];
-
-		$module->match('/articles', 'content.controllers.admin_article_controller:listAction')->bind('content:admin:article:list');
-		$module->match('/article/add', 'content.controllers.admin_article_controller:addAction')->bind('content:admin:article:add');
-		$module->match('/article/history/{resource}', 'content.controllers.admin_article_controller:historyAction')->bind('content:admin:article:history');
-		$module->match('/article/remove/{resource}', 'content.controllers.admin_article_controller:removeAction')->bind('content:admin:article:remove');
-		$module->match('/article/{resource}/{version}', 'content.controllers.admin_article_controller:revertAction')->bind('content:admin:article:revert');
-		$module->match('/article/{resource}', 'content.controllers.admin_article_controller:editAction')->bind('content:admin:article:edit');
-		$module->convert('resource', $app['content.article.provider']);
+		
+		$articleController = $app[$this->moduleName . '.category.controller_provider'];
+		//$articleController->bind("{$this->moduleName}:category");
+		$module->mount($app[$this->moduleName . '.category.routes_prefix'], $articleController);
+		
+		$categoryController = $app[$this->moduleName . '.article.controller_provider'];
+		//$categoryController->bind("{$this->moduleName}:article");
+		$module->mount($app[$this->moduleName . '.article.routes_prefix'], $categoryController);
+		
 		return $module;
+	}
+	
+	public function addAdminBasicRouting(&$module, $resourceName)
+	{
+		$routePrefix =  $this->moduleName . ':' . $resourceName;
+		$controllerPrefix = $this->moduleName . '.' . $resourceName;
+		
+		$module->match('/', "$controllerPrefix.controller:listAction")->bind("$routePrefix:list");
+		$module->match('/add', "$controllerPrefix.controller:addAction")->bind("$routePrefix:add");
+		$module->match('/remove/{resource}', "$controllerPrefix.controller:removeAction")->bind("$routePrefix:remove");
+		$module->match('/{resource}', "$controllerPrefix.controller:editAction")->bind("$routePrefix:edit");
+	}
+	
+	public function addAdminHistoryRouting(&$module, $resourceName)
+	{
+		$routePrefix =  $this->moduleName . ':' . $resourceName;
+		$controllerPrefix = $this->moduleName . '.' . $resourceName;
+		
+		$module->match('/history/{resource}', "$controllerPrefix.controller:historyAction")->bind("$routePrefix:history");
+		$module->match('/{resource}v{version}', "$controllerPrefix.controller:revertAction")->bind("$routePrefix:revert");
+	}
+	
+	public function addBasicConverters(&$module, $resourceName)
+	{
+		$prefix = $this->moduleName . '.' . $resourceName;
+		
+		$module->convert('resource', $this->app["$prefix.provider"]);
+	}
+	
+	public function addBasicMiddlewares(&$module, $resourceName)
+	{
+		$module->convert('resource', $this->app["$prefix.provider"]);
+	}
+	
+	public function registerDefaultResourceControllerProvidersFactories($app, $resources, $factory)
+	{
+		$app[$this->moduleName . '.controller_provider_factory'] = $factory;
+		
+		foreach ($resources as $resourceName) {
+			$app[$this->moduleName . '.' . $resourceName . '.controller_provider_factory'] = $factory;
+		}
+	}
+	
+	public function registerResourceControllerProviders($app, $resources)
+	{
+		$moduleProvider = $this;
+		$moduleName = $this->moduleName;
+		foreach ($resources as $resourceName) {
+			$app[$moduleName . '.' . $resourceName . '.controller_provider'] = $app->share(function() use($app, $moduleProvider, $resourceName, $moduleName) {
+				return $app[$moduleName . '.' . $resourceName . '.controller_provider_factory']($app, $moduleProvider, $resourceName);
+			});
+		}
 	}
 
 	public function register(Application $app) {
+		$moduleProvider = $this;
+		$this->app = $app;
+		
+		$app[$this->moduleName . '.module_provider'] = $this;
+		
 		// Checking for dependencies
 		if (!isset($app['orm.em']))
 		{
@@ -32,14 +97,33 @@ class AdminContentServiceProvider implements ServiceProviderInterface, Controlle
 		}
 
 		// Setup Controllers
-		$app['content.controllers.admin_article_controller'] = $app->share(function() use ($app) {
+		$app[$this->moduleName . '.article.controller'] = $app->share(function() use ($app) {
 			return new AdminArticleController($app);
 		});
-
+		
+		$app[$this->moduleName . '.category.controller_provider'] = $app->share(function() use ($app) {
+			return new AdminCategoryController($app);
+		});
+		
+		// Setup Controller Providers
+		$this->registerDefaultResourceControllerProvidersFactories($app, $this->moduleResources, $app->protect(function($app, $moduleProvider, $resourceName) {
+			$module = $app['controllers_factory'];
+			
+			$moduleProvider->addAdminBasicRouting($module, $resourceName);
+			$moduleProvider->addAdminHistoryRouting($module, $resourceName);
+			$moduleProvider->addBasicConverters($module, $resourceName);
+			
+			return $module;
+		}));
+		
+		$this->registerResourceControllerProviders($app, $this->moduleResources);
+		
 		// Setup routing
-		$app['content.routes.admin_prefix'] = '/content';
+		$app[$this->moduleName . '.routes_prefix'] = '/content';
+		$app[$this->moduleName . '.article.routes_prefix'] = '/articles';
+		$app[$this->moduleName . '.category.routes_prefix'] = '/categories';
 
-		$app['content.article.provider'] = $app->protect(function($id) use ($app) {
+		$app[$this->moduleName . '.article.provider'] = $app->protect(function($id) use ($app) {
 			if ($id != null)
 			{
 				$entityManager = $app['orm.em'];
@@ -50,17 +134,25 @@ class AdminContentServiceProvider implements ServiceProviderInterface, Controlle
 			return null;
 		});
 		
-		/*$app['form.extensions'] = $app->share($app->extend('form.extensions', function ($extensions) use ($app) {
-		 $extensions[] = new ArticleType();
+		$app[$this->moduleName . '.category.provider'] = $app->protect(function($id) use ($app) {
+			if ($id != null)
+			{
+				$entityManager = $app['orm.em'];
 
-		 return $extensions;
-		 }));*/
+				return $entityManager->getRepository('BDF2\Content\Entity\Category')->findOneById($id);
+			}
 
-		/*$app['form.type.extensions'] = $app->share($app->extend('form.type.extensions', function ($extensions) use ($app) {
-		 $extensions[] = new ArticleType();
+			return null;
+		});
 
-		 return $extensions;
-		 }));*/
+		// Setup form
+		$app[$this->moduleName . '.article.form'] = $app->protect(function($resource) use ($app) {
+			return $app['form.factory']->create(new ArticleType($app['form.data_transformer.date_time']), $resource);
+		});
+		
+		$app[$this->moduleName . '.category.form'] = $app->protect(function($resource) use ($app) {
+			return $app['form.factory']->create(new CategoryType(), $resource);
+		});
 
 		// Adding entities to ORM Entity Manager
 		$app['orm.em.paths'] = $app->share($app->extend('orm.em.paths', function($paths) use ($app) {
@@ -68,11 +160,6 @@ class AdminContentServiceProvider implements ServiceProviderInterface, Controlle
 
 			return $paths;
 		}));
-
-		// Setup form
-		$app['content.article.form'] = $app->protect(function($article) use ($app) {
-			return $app['form.factory']->create(new ArticleType($app['form.data_transformer.date_time']), $article);
-		});
 
 		// Adding view paths
 		$app['twig.path'] = $app->share($app->extend('twig.path', function($paths) {
@@ -83,7 +170,7 @@ class AdminContentServiceProvider implements ServiceProviderInterface, Controlle
 	}
 
 	public function boot(Application $app) {
-		$app->mount($app['content.routes.admin_prefix'], $this);
+		$app->mount($app[$this->moduleName . '.routes_prefix'], $this);//->bind($this->moduleName);
 	}
 
 }

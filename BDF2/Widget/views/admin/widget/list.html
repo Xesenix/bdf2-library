@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 
 {% block mainContent %}
+	{{ parent() }}
 	<ul>
 		{% for widget in widgets %}
 		<li>
