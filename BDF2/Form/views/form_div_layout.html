@@ -1,14 +1,14 @@
 {% extends "form_div_layout.html.twig" %}
 
 {% block form_label -%}
-    {% set label_attr = label_attr|merge({'class': (label_attr.class|default('') ~ ' col-xs-1 control-label text-right')|trim}) %}
+    {% set label_attr = label_attr|merge({'class': (label_attr.class|default('') ~ ' col-xs-12 col-lg-1 control-label text-left-xs text-right-lg')|trim}) %}
     {{ parent() }}
 {%- endblock form_label %}
 
 {% block form_row -%}
 	<div class="form-group">
        	{{- form_label(form) -}}
-        <div class="col-xs-11">
+        <div class="col-lg-11 col-xs-12">
         	{{- form_widget(form) -}}
         	{{- form_errors(form) -}}
         </div>
@@ -24,7 +24,7 @@
     {{ form_start(form) }}
         {{- form_widget(form) -}}
         <div class="form-group">
-        	<div class="col-xs-offset-1 col-xs-11">
+        	<div class="col-lg-offset-1 col-lg-11 col-xs-12">
         		<input class="btn btn-default" type="submit" name="submit" value="Zapisz"/>
         	</div>
         </div>
