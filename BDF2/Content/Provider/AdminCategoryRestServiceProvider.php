@@ -5,14 +5,14 @@ namespace BDF2\Content\Provider;
 use Silex\Application;
 use Silex\ServiceProviderInterface;
 use Silex\ControllerProviderInterface;
-use BDF2\Content\Form\Type\ArticleType;
+use BDF2\Content\Form\Type\CategoryType;
 use BDF2\Controllers\RestController;
 
-class AdminArticleRestServiceProvider implements ServiceProviderInterface, ControllerProviderInterface
+class AdminCategoryRestServiceProvider implements ServiceProviderInterface, ControllerProviderInterface
 {
 	protected $app = null;
 	
-	protected $moduleName = 'article_admin';
+	protected $moduleName = 'category_admin';
 	
 	public function connect(Application $app) {
 		$module = $app['controllers_factory'];
@@ -80,18 +80,18 @@ class AdminArticleRestServiceProvider implements ServiceProviderInterface, Contr
 		$app[$this->moduleName . '.controller'] = $app->share(function() use ($app, $moduleName) {
 			$em = $app['orm.em'];
 			
-			return new RestController($app, $moduleName, $em->getRepository('BDF2\Content\Entity\Article'), $app[$moduleName . '.form_provider']);
+			return new RestController($app, $moduleName, $em->getRepository('BDF2\Content\Entity\Category'), $app[$moduleName . '.form_provider']);
 		});
 		
 		// Setup routing
-		$app[$this->moduleName . '.routes_prefix'] = '/articles';
+		$app[$this->moduleName . '.routes_prefix'] = '/categories';
 
 		$app[$this->moduleName . '.resource_provider'] = $app->protect(function($id) use ($app) {
 			if ($id != null)
 			{
 				$entityManager = $app['orm.em'];
 
-				return $entityManager->getRepository('BDF2\Content\Entity\Article')->findOneById($id);
+				return $entityManager->getRepository('BDF2\Content\Entity\Category')->findOneById($id);
 			}
 
 			return null;
@@ -99,7 +99,7 @@ class AdminArticleRestServiceProvider implements ServiceProviderInterface, Contr
 		
 		// Setup form
 		$app[$this->moduleName . '.form_provider'] = $app->protect(function($resource) use ($app) {
-			return $app['form.factory']->create(new ArticleType($app['form.data_transformer.date_time']), $resource);
+			return $app['form.factory']->create(new CategoryType($app['form.data_transformer.date_time']), $resource);
 		});
 
 		// Adding entities to ORM Entity Manager

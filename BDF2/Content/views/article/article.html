@@ -15,7 +15,7 @@
 		<footer>
 			<p><time pubdate datetime="{{ article.date|date(app['date.default_format'])|e('html_attr') }}">{{ article.date|date('d/m/Y') }}</time></p>
 			
-			<p>Autor: {{ article.author }}</p>	
+			<p>Autor: {{ article.author }}</p>
 		</footer>
 	</section>
 {% endblock %}

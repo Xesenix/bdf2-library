@@ -21,7 +21,7 @@ class AdminContentServiceProvider implements ServiceProviderInterface, Controlle
 	public function connect(Application $app) {
 		$module = $app['controllers_factory'];
 		
-		//$module->mount($app['category_admin.routes_prefix'], $app['category_admin.controller_provider']->connect($app));
+		$module->mount($app['category_admin.routes_prefix'], $app['category_admin.controller_provider']->connect($app));
 		$module->mount($app['article_admin.routes_prefix'], $app['article_admin.controller_provider']->connect($app));
 		
 		return $module;
@@ -46,6 +46,9 @@ class AdminContentServiceProvider implements ServiceProviderInterface, Controlle
 		// Register submodules
 		$articleServiceProvider = new AdminArticleRestServiceProvider();
 		$articleServiceProvider->register($app);
+		
+		$categoryServiceProvider = new AdminCategoryRestServiceProvider();
+		$categoryServiceProvider->register($app);
 		
 		// Setup routing
 		$app[$this->moduleName . '.routes_prefix'] = '/content';

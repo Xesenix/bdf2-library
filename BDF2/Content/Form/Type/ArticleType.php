@@ -21,10 +21,7 @@ class ArticleType extends AbstractType
 			->add('title')
 			->add('content', 'textarea', array('required' => false))
 			->add('author', 'text', array('required' => false))
-			->add(
-				$builder->create('date', 'text', array('attr' => array('class' => 'datapicker', 'required' => false,)))
-				->addModelTransformer($this->dateTransformer)
-			);
+			->add('date', 'date', array('attr' => array('class' => 'datapicker',), 'required' => false, 'widget' => 'single_text'));
 	}
 
 	public function setDefaultOptions(OptionsResolverInterface $resolver) {

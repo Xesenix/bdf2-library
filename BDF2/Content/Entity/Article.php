@@ -33,18 +33,18 @@ class Article
 
 	/** 
 	 * @Gedmo\Versioned
-	 * @ORM\Column(type="text")
+	 * @ORM\Column(type="text",nullable=true)
 	 */
 	protected $content;
 
 	/** 
 	 * @Gedmo\Versioned
-	 * @ORM\Column(type="string")
+	 * @ORM\Column(type="string",nullable=true)
 	 */
 	protected $author;
 
 	/** 
-	 * @ORM\Column(type="date") 
+	 * @ORM\Column(type="date",nullable=true) 
 	 */
 	protected $date;
 	

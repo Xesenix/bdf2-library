@@ -21,7 +21,7 @@
 {%- endblock form_widget_simple %}
 
 {% block form -%}
-    {{ form_start(form) }}
+    {{ form_start(form, {'attr': {'class': form.attr.class|default('') ~ ' form-horizontal', 'novalidate': 'novalidate'}}) }}
         {{- form_widget(form) -}}
         <div class="form-group">
         	<div class="col-lg-offset-1 col-lg-11 col-xs-12">
@@ -30,9 +30,3 @@
         </div>
     {{ form_end(form) }}
 {%- endblock form %}
-
-{% block form_start -%}
-    {% set attr = attr|merge({'class': (attr.class|default('') ~ ' form-horizontal')|trim, novalidate: true }) %}
-	{{ parent() }}
-{%- endblock form_start %}
-

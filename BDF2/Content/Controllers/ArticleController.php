@@ -22,7 +22,7 @@ class ArticleController extends AbstractController
 	public function articleAction() {
 		$entityManager = $this->app['orm.em'];
 
-		$slug = $this->request->get('slug');
+		$slug = $this->app['request']->get('slug');
 
 		$article = $entityManager->getRepository('BDF2\Content\Entity\Article')->findOneBy(array('slug' => $slug));
 

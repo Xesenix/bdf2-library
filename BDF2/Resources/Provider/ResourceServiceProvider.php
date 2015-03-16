@@ -92,5 +92,4 @@ class ResourceServiceProvider implements ServiceProviderInterface, ControllerPro
 	public function boot(Application $app) {
 		$app->mount($app['resources.routes.prefix'], $this);
 	}
-
 }

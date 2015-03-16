@@ -20,8 +20,9 @@ class AdminWidgetController extends AbstractController
 
 	public function editAction() {
 		$entityManager = $this->app['orm.em'];
+		$request = $this->app['request'];
 
-		$id = $this->request->get('id');
+		$id = $request->get('id');
 
 		$resource = $entityManager->getRepository('BDF2\Widget\Entity\Widget')->findOneById($id);
 
@@ -32,9 +33,9 @@ class AdminWidgetController extends AbstractController
 
 		$form = $this->app['widget.widget.form']($resource);
 
-		if ($this->request->getMethod() == 'POST')
+		if ($request->getMethod() == 'POST')
 		{
-			$form->bind($this->request);
+			$form->bind($request);
 
 			if ($form->isValid())
 			{
@@ -59,9 +60,9 @@ class AdminWidgetController extends AbstractController
 		
 		$form = $this->app['widget.widget.form']($resource);
 		
-		if ($this->request->getMethod() == 'POST')
+		if ($request->getMethod() == 'POST')
 		{
-			$form->bind($this->request);
+			$form->bind($request);
 
 			if ($form->isValid())
 			{

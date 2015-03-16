@@ -20,11 +20,9 @@ class AdminMenuController extends AbstractController {
 		));
 	}
 	
-	public function editAction()
+	public function editAction($id)
 	{
 		$entityManager = $this->app['orm.em'];
-
-		$id = $this->request->get('id');
 
 		$resource = $entityManager->getRepository('BDF2\Navigation\Entity\Menu')->findOneById($id);
 
@@ -35,9 +33,9 @@ class AdminMenuController extends AbstractController {
 
 		$form = $this->app['navigation.menu.form']($resource);
 
-		if ($this->request->getMethod() == 'POST')
+		if ($this->app['request']->getMethod() == 'POST')
 		{
-			$form->bind($this->request);
+			$form->bind($this->app['request']);
 
 			if ($form->isValid())
 			{
@@ -60,9 +58,9 @@ class AdminMenuController extends AbstractController {
 		
 		$form = $this->app['navigation.menu.form']($resource);
 		
-		if ($this->request->getMethod() == 'POST')
+		if ($this->app['request']->getMethod() == 'POST')
 		{
-			$form->bind($this->request);
+			$form->bind($this->app['request']);
 
 			if ($form->isValid())
 			{

@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+
+{% block mainContent %}
+	{{ parent() }}
+	
+	<ul class="nav nav-tabs" role="tablist">
+		<li class="active"><a href="#edycja" data-toggle="tab">Edycja</a></li>
+		{% if resource is defined -%}
+			<li><a href="#historia" data-toggle="tab">Historia</a></li>
+		{%- endif %}
+	</ul>
+	
+	<div class="tab-content">
+		<div id="edycja" class="tab-pane active">
+			{{ form(form) }}
+		</div>
+		{% if resource is defined -%}
+		<div id="historia" class="tab-pane">
+			{{ render(url('article_admin:history', { resource: resource.id })) }}
+		</div>
+		{%- endif %}
+	</div>
+
+{% endblock %}

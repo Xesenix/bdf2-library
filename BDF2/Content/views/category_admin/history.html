@@ -1,0 +1,62 @@
+{% if history is not empty %}
+<table class="table">
+	<thead>
+		<tr>
+			<th class="col-xs-1">Wersja</th>
+			<th class="col-xs-8">Zmiany</th>
+			<th class="col-xs-1">Kto</th>
+			<th class="col-xs-1">Kiedy</th>
+			<th class="col-xs-1">Akcje</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for log in history %}
+		<tr>
+			<td>{{ log.version }}</td>
+			<td>
+				<dl>
+					<dt>
+						<p>Tytuł
+							{% if log.data.title is defined -%}
+								<span class="label label-primary">zmiana</span>
+							{%- else -%}
+								<span class="label label-info">brak zmian</span>
+							{%- endif %}
+						</p>
+					</dt>
+					<dd>
+						{% if log.data.title is defined %}
+						<div class="well">{{ log.data.title|default('')|raw }}</div>
+						{% endif %}
+					</dd>
+					<dt>
+						<p>Treść
+							{% if log.data.content is defined -%}
+								<span class="label label-primary">zmiana</span>
+							{%- else -%}
+								<span class="label label-info">brak zmian</span>
+							{%- endif %}
+						</p>
+					</dt>
+					<dd>
+						{% if log.data.content is defined %}
+						<div class="well">{{ log.data.content|default('')|raw }}</div>
+						{% endif %}
+					</dd>
+				</dl>
+			</td>
+			<td>{{ log.username }}</td>
+			<td>{{ log.loggedAt|date(app['date_time.default_format']) }}</td>
+			<td>
+				<div class="btn-group">
+					<a class="btn btn-primary" href="{{ url('category_admin:revert', { resource: log.objectId, version: log.version }) }}">Przywróć</a>
+				</div>
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+{% else %}
+<p>Brak histori dokonywanych zmian.</p>
+{% endif %}
+
