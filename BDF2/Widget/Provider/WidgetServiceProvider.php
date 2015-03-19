@@ -63,8 +63,8 @@ class WidgetServiceProvider implements ServiceProviderInterface, ControllerProvi
 
 		/*$app->on('twig:render', function() use($app) {
 
-		 $app['twig']->addGlobal('widgetManager', $app['widget.manager']);
-		 });*/
+			$app['twig']->addGlobal('widgetManager', $app['widget.manager']);
+		});*/
 	}
 
 }
