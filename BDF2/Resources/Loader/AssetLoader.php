@@ -98,7 +98,7 @@ class AssetLoader extends Loader
 	public function unload($resource, $type = null) {
 		$assetsPath = $this->pathHelper->joinPaths($this->assetDirectory, $resource);
 
-		$this->fs->remove($assetsPath);
+		$this->getFilesystem()->remove($assetsPath);
 	}
 
 }

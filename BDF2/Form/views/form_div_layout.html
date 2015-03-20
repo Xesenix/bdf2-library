@@ -1,32 +1,33 @@
 {% extends "form_div_layout.html.twig" %}
 
 {% block form_label -%}
-    {% set label_attr = label_attr|merge({'class': (label_attr.class|default('') ~ ' col-xs-12 col-lg-1 control-label text-left-xs text-right-lg')|trim}) %}
-    {{ parent() }}
+	{% set label_attr = label_attr|merge({'class': (label_attr.class|default('') ~ ' col-xs-12 col-lg-1 control-label text-left-xs text-right-lg')|trim}) %}
+	{% set label_format = '' %}
+	{{ parent() }}
 {%- endblock form_label %}
 
 {% block form_row -%}
 	<div class="form-group">
-       	{{- form_label(form) -}}
-        <div class="col-lg-11 col-xs-12">
-        	{{- form_widget(form) -}}
-        	{{- form_errors(form) -}}
-        </div>
-    </div>
+		{{- form_label(form) -}}
+		<div class="col-lg-11 col-xs-12">
+			{{- form_widget(form) -}}
+			{{- form_errors(form) -}}
+		</div>
+	</div>
 {%- endblock form_row %}
 
 {% block form_widget_simple -%}
-    {% set attr = attr|merge({'class': (attr.class|default('') ~ ' form-control')|trim}) %}
+	{% set attr = attr|merge({'class': (attr.class|default('') ~ ' form-control')|trim}) %}
 	{{ parent() }}
 {%- endblock form_widget_simple %}
 
 {% block form -%}
-    {{ form_start(form, {'attr': {'class': form.attr.class|default('') ~ ' form-horizontal', 'novalidate': 'novalidate'}}) }}
-        {{- form_widget(form) -}}
-        <div class="form-group">
-        	<div class="col-lg-offset-1 col-lg-11 col-xs-12">
-        		<input class="btn btn-default" type="submit" name="submit" value="Zapisz"/>
-        	</div>
-        </div>
-    {{ form_end(form) }}
+	{{ form_start(form, {'attr': {'class': form.attr.class|default('') ~ ' form-horizontal', 'novalidate': 'novalidate'}}) }}
+		{{- form_widget(form) -}}
+		<div class="form-group">
+			<div class="col-lg-offset-1 col-lg-11 col-xs-12">
+				<input class="btn btn-default" type="submit" name="submit" value="Zapisz"/>
+			</div>
+		</div>
+	{{ form_end(form) }}
 {%- endblock form %}

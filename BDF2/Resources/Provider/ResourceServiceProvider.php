@@ -17,13 +17,14 @@ class ResourceServiceProvider implements ServiceProviderInterface, ControllerPro
 
 	public function connect(Application $app) {
 		$module = $app['controllers_factory'];
-
+		
+		$module->match($app['resources.routes.clear'], 'resources.controllers.resources_controller:clearAction')->bind('resource:clear')->value('path', '/');
+		
 		$module->match($app['resources.routes.asset'], 'resources.controllers.resources_controller:generateJsAction')->bind('resource:js')->assert('file', '[\w-\._/]+\.js');
 		$module->match($app['resources.routes.asset'], 'resources.controllers.resources_controller:generateCssAction')->bind('resource:css')->assert('file', '[\w-\._/]+\.css');
 		$module->match($app['resources.routes.asset'], 'resources.controllers.resources_controller:generateAssetAction')->bind('resource:image')->assert('file', '[\w-\._/]+\.(jpg|png|gif)');
 		$module->match($app['resources.routes.asset'], 'resources.controllers.resources_controller:generateAssetAction')->bind('resource:asset')->assert('file', '[\w-\._/]+');
-		$module->match($app['resources.routes.clear'], 'resources.controllers.resources_controller:clearAction')->bind('resource:clear')->value('path', '/');
-
+		
 		return $module;
 	}
 
