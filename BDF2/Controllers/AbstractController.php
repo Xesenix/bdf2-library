@@ -12,7 +12,7 @@ class AbstractController
 		$this->app = $app;
 	}
 
-	public function render($template, array $data) {
+	public function render($template, array $data = array()) {
 		$this->app['dispatcher']->dispatch('twig:render');
 
 		return $this->app['twig']->render($template, $data);
