@@ -19,6 +19,8 @@ class StaticServiceProvider implements ServiceProviderInterface, ControllerProvi
 	}
 
 	public function register(Application $app) {
+		$app['content.static.module_provider'] = $this;
+		
 		// Setup Controllers
 		$app['content.static.controller'] = $app->share(function() use ($app) {
 			return new StaticController($app);
@@ -41,7 +43,7 @@ class StaticServiceProvider implements ServiceProviderInterface, ControllerProvi
 	}
 
 	public function boot(Application $app) {
-		$app->mount($app['content.static.routes.prefix'], $this);
+		$app->mount($app['content.static.routes.prefix'], $app['content.static.module_provider']);
 	}
 
 }
