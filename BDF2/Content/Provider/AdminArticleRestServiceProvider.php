@@ -12,7 +12,7 @@ class AdminArticleRestServiceProvider implements ServiceProviderInterface, Contr
 {
 	protected $app = null;
 	
-	protected $moduleName = 'article_admin';
+	protected $moduleName = 'content.article_admin';
 	
 	public function connect(Application $app) {
 		$module = $app['controllers_factory'];
@@ -26,27 +26,21 @@ class AdminArticleRestServiceProvider implements ServiceProviderInterface, Contr
 	
 	public function addAdminBasicRouting(&$module)
 	{
-		$prefix =  $this->moduleName;
-		
-		$module->match('/', "$prefix.controller:listAction")->bind("$prefix:list");
-		$module->match('/add', "$prefix.controller:addAction")->bind("$prefix:add");
-		$module->match('/remove/{resource}', "$prefix.controller:removeAction")->bind("$prefix:remove");
-		$module->match('/{resource}', "$prefix.controller:editAction")->bind("$prefix:edit");
+		$module->match('/', $this->moduleName . '.controller:listAction')->bind($this->moduleName . ':list');
+		$module->match('/add', $this->moduleName . '.controller:addAction')->bind($this->moduleName . ':add');
+		$module->match('/remove/{resource}', $this->moduleName . '.controller:removeAction')->bind($this->moduleName . ':remove');
+		$module->match('/{resource}', $this->moduleName . '.controller:editAction')->bind($this->moduleName . ':edit');
 	}
 	
 	public function addAdminHistoryRouting(&$module)
 	{
-		$prefix =  $this->moduleName;
-		
-		$module->match('/history/{resource}', "$prefix.controller:historyAction")->bind("$prefix:history");
-		$module->match('/{resource}v{version}', "$prefix.controller:revertAction")->bind("$prefix:revert");
+		$module->match('/history/{resource}', $this->moduleName . '.controller:historyAction')->bind($this->moduleName . ':history');
+		$module->match('/{resource}v{version}', $this->moduleName . '.controller:revertAction')->bind($this->moduleName . ':revert');
 	}
 	
 	public function addBasicConverters(&$module)
 	{
-		$prefix = $this->moduleName;
-		
-		$module->convert('resource', $this->app["$prefix.resource_provider"]);
+		$module->convert('resource', $this->app[$this->moduleName . '.resource_provider']);
 		$module->assert('resource', '\d+');
 		$module->assert('version', '\d+');
 	}
@@ -60,7 +54,7 @@ class AdminArticleRestServiceProvider implements ServiceProviderInterface, Contr
 		$moduleName = $this->moduleName;
 		$this->app = $app;
 		
-		$app[$this->moduleName . '.module_provider'] = $this;
+		$app[$moduleName . '.module_provider'] = $this;
 		
 		// Checking for dependencies
 		if (!isset($app['orm.em']))
@@ -74,19 +68,21 @@ class AdminArticleRestServiceProvider implements ServiceProviderInterface, Contr
 		}
 		
 		// Setup controller provider
-		$app[$this->moduleName . '.controller_provider'] = $this;
+		$app[$moduleName . '.module_provider'] = $this;
 
 		// Setup controllers
-		$app[$this->moduleName . '.controller'] = $app->share(function() use ($app, $moduleName) {
+		$app[$moduleName . '.controller'] = $app->share(function() use ($app, $moduleName) {
 			$em = $app['orm.em'];
+			$moduleViewPath = str_replace('.', '/', $moduleName);
 			
-			return new RestController($app, $moduleName, $em->getRepository('BDF2\Content\Entity\Article'), $app[$moduleName . '.form_provider']);
+			return new RestController($app, $moduleName, $moduleViewPath, $em->getRepository('BDF2\Content\Entity\Article'), $app[$moduleName . '.form_provider']);
 		});
 		
 		// Setup routing
-		$app[$this->moduleName . '.routes_prefix'] = '/articles';
-
-		$app[$this->moduleName . '.resource_provider'] = $app->protect(function($id) use ($app) {
+		$app[$moduleName . '.routes.prefix'] = '/articles';
+		
+		// Setup resources managed by module
+		$app[$moduleName . '.resource_provider'] = $app->protect(function($id) use ($app) {
 			if ($id != null)
 			{
 				$entityManager = $app['orm.em'];
@@ -98,7 +94,7 @@ class AdminArticleRestServiceProvider implements ServiceProviderInterface, Contr
 		});
 		
 		// Setup form
-		$app[$this->moduleName . '.form_provider'] = $app->protect(function($resource) use ($app) {
+		$app[$moduleName . '.form_provider'] = $app->protect(function($resource) use ($app) {
 			return $app['form.factory']->create(new ArticleType($app['form.data_transformer.date_time']), $resource);
 		});
 
@@ -127,7 +123,7 @@ class AdminArticleRestServiceProvider implements ServiceProviderInterface, Contr
 
 	public function boot(Application $app) {
 		// for standalone version
-		$app->mount($app[$this->moduleName . '.routes_prefix'], $app[$this->moduleName . '.controller_provider']);
+		$app->mount($app[$this->moduleName . '.routes.prefix'], $app[$this->moduleName . '.module_provider']);
 	}
 
 }

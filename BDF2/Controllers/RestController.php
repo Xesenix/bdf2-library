@@ -10,6 +10,8 @@ class RestController extends AbstractController
 	
 	protected $modulePrefix;
 	
+	protected $moduleViewPath;
+	
 	protected $formProvider;
 
 	/**
@@ -17,18 +19,19 @@ class RestController extends AbstractController
 	 * @param EntityRepository $resourceRepository - resource entities repository
 	 * @param callback $formProvider - provides form for editing resource
 	 */
-	public function __construct(Application $app, $modulePrefix, $resourceRepository, $formProvider) {
+	public function __construct(Application $app, $modulePrefix, $moduleViewPath, $resourceRepository, $formProvider) {
 		parent::__construct($app);
 		
 		$this->modulePrefix = $modulePrefix;
 		$this->resourceRepository = $resourceRepository;
+		$this->moduleViewPath = $moduleViewPath;
 		$this->formProvider = $formProvider;
 	}
 
 	public function listAction() {
 		$entityManager = $this->app['orm.em'];
 
-		return $this->render($this->modulePrefix . '/list.html', array(
+		return $this->render($this->moduleViewPath . '/list.html', array(
 			'pageTitle' => 'Lista zasobów',
 			'resources' => $this->resourceRepository->findAll()
 		));
@@ -83,7 +86,7 @@ class RestController extends AbstractController
 			}
 		}
 
-		return $this->render($this->modulePrefix . '/edit.html', array(
+		return $this->render($this->moduleViewPath . '/edit.html', array(
 			'pageTitle' => 'Edycja zasobu',
 			'form' => $form->createView(),
 			'resource' => $resource,
@@ -111,7 +114,7 @@ class RestController extends AbstractController
 			}
 		}
 		
-		return $this->render($this->modulePrefix . '/edit.html', array(
+		return $this->render($this->moduleViewPath . '/edit.html', array(
 			'pageTitle' => 'Dodaj zasób',
 			'form' => $form->createView(),
 		));
@@ -133,7 +136,7 @@ class RestController extends AbstractController
 		$logRepository = $entityManager->getRepository('Gedmo\Loggable\Entity\LogEntry');
 		$logs = $logRepository->getLogEntries($resource);
 		
-		return $this->render($this->modulePrefix . '/history.html', array(
+		return $this->render($this->moduleViewPath . '/history.html', array(
 			'pageTitle' => 'Historia zmian zasobu',
 			'history' => $logs,
 		));

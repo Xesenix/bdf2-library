@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+
+{% block mainContent %}
+	{{ parent() }}
+	<ul>
+		{% for resource in resources %}
+		<li>
+			<a href="{{ path('widget.widget_admin:edit', { resource: resource.id }) }}">{{ resource.name }}</a> (<a href="{{ path('widget.widget_admin:remove', { resource: resource.id }) }}">usuń</a>)
+		</li>
+		{% endfor %}
+		<li>
+			<a href="{{ path('widget.widget_admin:add') }}">Dodaj moduł</a>
+		</li>
+	</ul>
+{% endblock %}

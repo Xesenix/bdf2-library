@@ -15,7 +15,7 @@ class Widget
 	 * @ORM\Column(type="integer")
 	 * @ORM\GeneratedValue
 	 */
-	public $id;
+	protected $id;
 
 	/** 
 	 * @ORM\Column(type="string")
@@ -33,4 +33,15 @@ class Widget
 	public $content;
 
 	public $route = 'widget:content';
+	
+	
+	public function setId($id) {
+		$this->id = $id;
+
+		return $this;
+	}
+
+	public function getId() {
+		return $this->id;
+	}
 }

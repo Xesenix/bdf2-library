@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% block mainContent %}
+	<ul>
+		{% for resource in resources %}
+		<li>
+			<a href="{{ path('navigation.menu_admin:edit', { resource: resource.id }) }}">{{ resource.name }}</a> (<a href="{{ path('navigation.menu_admin:remove', { resource: resource.id }) }}">usuń</a>)
+		</li>
+		{% endfor %}
+		<li>
+			<a href="{{ path('navigation.menu_admin:add') }}">Dodaj menu</a>
+		</li>
+	</ul>
+{% endblock %}

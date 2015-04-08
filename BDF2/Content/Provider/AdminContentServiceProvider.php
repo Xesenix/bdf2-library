@@ -14,15 +14,15 @@ class AdminContentServiceProvider implements ServiceProviderInterface, Controlle
 {
 	protected $app = null;
 	
-	protected $moduleName = 'content_admin';
+	protected $moduleName = 'content.admin';
 	
-	protected $moduleResources = array('article', 'category');
+	protected $moduleResources = array('static', 'article', 'category');
 	
 	public function connect(Application $app) {
 		$module = $app['controllers_factory'];
 		
-		$module->mount($app['category_admin.routes_prefix'], $app['category_admin.controller_provider']->connect($app));
-		$module->mount($app['article_admin.routes_prefix'], $app['article_admin.controller_provider']->connect($app));
+		$module->mount($app['content.category_admin.routes.prefix'], $app['content.category_admin.module_provider']->connect($app));
+		$module->mount($app['content.article_admin.routes.prefix'], $app['content.article_admin.module_provider']->connect($app));
 		
 		return $module;
 	}
@@ -34,15 +34,6 @@ class AdminContentServiceProvider implements ServiceProviderInterface, Controlle
 		// Setup controller provider
 		$app[$this->moduleName . '.module_provider'] = $this;
 		
-		// Setup controllers
-		$app[$this->moduleName . '.article.controller'] = $app->share(function() use ($app) {
-			return new AdminArticleController($app);
-		});
-		
-		$app[$this->moduleName . '.category.controller_provider'] = $app->share(function() use ($app) {
-			return new AdminCategoryController($app);
-		});
-		
 		// Register submodules
 		$articleServiceProvider = new AdminArticleRestServiceProvider();
 		$articleServiceProvider->register($app);
@@ -51,11 +42,11 @@ class AdminContentServiceProvider implements ServiceProviderInterface, Controlle
 		$categoryServiceProvider->register($app);
 		
 		// Setup routing
-		$app[$this->moduleName . '.routes_prefix'] = '/content';
+		$app[$this->moduleName . '.routes.prefix'] = '/content';
 	}
 
 	public function boot(Application $app) {
-		$app->mount($app[$this->moduleName . '.routes_prefix'], $this);
+		$app->mount($app[$this->moduleName . '.routes.prefix'], $app[$this->moduleName . '.module_provider']);
 	}
 
 }

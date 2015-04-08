@@ -13,8 +13,8 @@ class ContentServiceProvider implements ServiceProviderInterface, ControllerProv
 	public function connect(Application $app) {
 		$module = $app['controllers_factory'];
 
-		$module->match('/', 'content.controllers.article_controller:listAction')->bind('articles');
-		$module->match('/{slug}', 'content.controllers.article_controller:articleAction')->bind('article');
+		$module->match('/', 'content.article.controller:listAction')->bind('articles');
+		$module->match('/{slug}', 'content.article.controller:articleAction')->bind('article');
 
 		return $module;
 	}
@@ -27,12 +27,12 @@ class ContentServiceProvider implements ServiceProviderInterface, ControllerProv
 		}
 
 		// Setup Controllers
-		$app['content.controllers.article_controller'] = $app->share(function() use ($app) {
+		$app['content.article.controller'] = $app->share(function() use ($app) {
 			return new ArticleController($app);
 		});
 
 		// Setup routing
-		$app['content.routes.prefix'] = '/articles';
+		$app['content.article.routes.prefix'] = '/articles';
 
 		// Adding entities to ORM Entity Manager
 		$app['orm.em.paths'] = $app->share($app->extend('orm.em.paths', function($paths) use ($app) {
@@ -43,14 +43,19 @@ class ContentServiceProvider implements ServiceProviderInterface, ControllerProv
 
 		// Adding view paths
 		$app['twig.path'] = $app->share($app->extend('twig.path', function($paths) {
-			$paths[] = __DIR__ . '/../views';
+			$path = __DIR__ . '/../views';
+			
+			if (!in_array($path, $paths))
+			{
+				$paths[] = $path;
+			}
 
 			return $paths;
 		}));
 	}
 
 	public function boot(Application $app) {
-		$app->mount($app['content.routes.prefix'], $this);
+		$app->mount($app['content.article.routes.prefix'], $this);
 	}
 
 }

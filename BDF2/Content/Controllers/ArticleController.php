@@ -15,7 +15,7 @@ class ArticleController extends AbstractController
 		
 		$this->app['dispatcher']->dispatch('articles:render');
 		
-		return $this->render('article/list.html', array(
+		return $this->render('content/article/list.html', array(
 			'pageTitle' => 'Test listy artykułów',
 			'articles' => $entityManager->getRepository('BDF2\Content\Entity\Article')->findAll()
 		));
@@ -32,7 +32,7 @@ class ArticleController extends AbstractController
 		
 		if (!empty($article))
 		{
-			return $this->render('article/article.html', array(
+			return $this->render('content/article/article.html', array(
 				'pageTitle' => $article->getTitle(),
 				'article' => $article,
 			));
