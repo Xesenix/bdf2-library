@@ -13,7 +13,7 @@ class StaticServiceProvider implements ServiceProviderInterface, ControllerProvi
 	public function connect(Application $app) {
 		$module = $app['controllers_factory'];
 
-		$module->match('/{page}', 'content.static.controller:pageAction')->bind('page');
+		$module->match('/{page}', 'content.static.controller:page')->bind('page');
 
 		return $module;
 	}
