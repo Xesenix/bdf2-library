@@ -16,20 +16,20 @@
 	"require": {
 		"silex/silex": "~1.2",
 		"twig/twig": ">=1.8,<2.0-dev",
-		"doctrine/orm": "2.4.*",
-		"gedmo/doctrine-extensions": "2.3.9",
+		"doctrine/orm": "2.4",
+		"gedmo/doctrine-extensions": "2.3",
 		"symfony/twig-bridge": "~2.3",
-		"symfony/form": "2.5.2",
-		"symfony/finder": "2.3.*",
+		"symfony/form": "2.5",
+		"symfony/finder": "2.3",
 		"symfony/validator": "~2.3",
-		"symfony/config": "2.6.*",
-		"symfony/translation": "~2.3",
+		"symfony/config": "2.6",
+		"symfony/translation": "~2.6",
 		"symfony/locale": "~2.3",
 		"symfony/security": "~2.3",
 		"symfony/security-csrf": "~2.4",
-		"kriswallsmith/assetic": "1.2.*",
+		"kriswallsmith/assetic": "1.2",
 		"natxet/CssMin": "~3",
-		"getninja/gravatar": "0.2.*"
+		"getninja/gravatar": "0.2"
 	},
 
 	"autoload": {
