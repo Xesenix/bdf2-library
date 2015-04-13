@@ -15,9 +15,15 @@ class AbstractController
 
 	public function render($template, array $data = array()) {
 		$this->app['dispatcher']->dispatch('twig:render');
-
-		return new Response($this->app['twig']->render($template, $data), 200, array(
-			'Cache-Control' => 's-maxage=5',
-		));
+		
+		try {
+			return new Response($this->app['twig']->render($template, $data), 200, array(
+				'Cache-Control' => 's-maxage=5',
+			));
+		}
+		catch(\Twig_Error_Loader $error)
+		{
+			$this->app->abort(404, "Strona nie istnieje.");
+		}
 	}
 }

@@ -11,10 +11,8 @@ class StaticController extends AbstractController {
 
 	public function render($template, array $data = array()) {
 		$this->app['dispatcher']->dispatch('static:render');
-
-		return new Response($this->app['twig']->render($template, $data), 200, array(
-			'Cache-Control' => 's-maxage=5',
-		));
+		
+		return parent::render($template, $data);
 	}
 	
 	public function page(Application $app)
