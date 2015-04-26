@@ -18,12 +18,24 @@ class ResourceServiceProvider implements ServiceProviderInterface, ControllerPro
 	public function connect(Application $app) {
 		$module = $app['controllers_factory'];
 		
-		$module->match($app['resources.assets.routes.clear'], 'resources.assets.controller:clearAction')->bind('resource:clear')->value('path', '/');
+		$module->match($app['resources.assets.routes.clear'], 'resources.assets.controller:clearAction')
+			->bind('resource:clear')->value('path', '/');
 		
-		$module->match($app['resources.assets.routes.asset'], 'resources.assets.controller:generateJsAction')->bind('resource:js')->assert('file', '[\w-\._/]+\.js');
-		$module->match($app['resources.assets.routes.asset'], 'resources.assets.controller:generateCssAction')->bind('resource:css')->assert('file', '[\w-\._/]+\.css');
-		$module->match($app['resources.assets.routes.asset'], 'resources.assets.controller:generateAssetAction')->bind('resource:image')->assert('file', '[\w-\._/]+\.(jpg|png|gif)');
-		$module->match($app['resources.assets.routes.asset'], 'resources.assets.controller:generateAssetAction')->bind('resource:asset')->assert('file', '[\w-\._/]+');
+		$module->match($app['resources.assets.routes.asset'], 'resources.assets.controller:generateJsAction')
+			->bind('resource:js')
+			->assert('file', '[\w-\._/]+\.js');
+		
+		$module->match($app['resources.assets.routes.asset'], 'resources.assets.controller:generateCssAction')
+			->bind('resource:css')
+			->assert('file', '[\w-\._/]+\.css');
+		
+		$module->match($app['resources.assets.routes.asset'], 'resources.assets.controller:generateAssetAction')
+			->bind('resource:image')
+			->assert('file', '[\w-\._/]+\.(' . implode('|', $app['resources.assets.images.extensions']) . ')');
+		
+		$module->match($app['resources.assets.routes.asset'], 'resources.assets.controller:generateAssetAction')
+			->bind('resource:asset')
+			->assert('file', '[\w-\._/]+');
 		
 		return $module;
 	}
@@ -33,6 +45,15 @@ class ResourceServiceProvider implements ServiceProviderInterface, ControllerPro
 
 		$app['path.helper'] = $app->share(function() {
 			return new PathHelper();
+		});
+		
+		$app['resources.assets.images.extensions'] = $app->share(function() {
+			return array(
+				'jpg',
+				'png',
+				'gif',
+				'ico',
+			);
 		});
 
 		// Setup Controllers
