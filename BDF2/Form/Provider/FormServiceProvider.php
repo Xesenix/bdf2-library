@@ -15,6 +15,7 @@ class FormServiceProvider implements ServiceProviderInterface
 		});
 
 		// Adding view paths
+		// TODO: form_div_layout.html nie powinno być tu zmodyfikowane w sposób niestandardowy (klassy css bootstrapa) 
 		$app['twig.path'] = $app->share($app->extend('twig.path', function($paths) {
 			$paths[] = __DIR__ . '/../views';
 

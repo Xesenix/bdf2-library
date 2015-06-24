@@ -19,7 +19,8 @@ class ResourceServiceProvider implements ServiceProviderInterface, ControllerPro
 		$module = $app['controllers_factory'];
 		
 		$module->match($app['resources.assets.routes.clear'], 'resources.assets.controller:clearAction')
-			->bind('resource:clear')->value('path', '/');
+			->bind('resource:clear')
+			->value('path', '/');
 		
 		$module->match($app['resources.assets.routes.asset'], 'resources.assets.controller:generateJsAction')
 			->bind('resource:js')

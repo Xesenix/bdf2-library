@@ -21,6 +21,8 @@ class CompositionLoader extends Loader
 	protected $publishMode = true;
 
 	protected $publishName = null;
+	
+	protected $debugMode = false;
 
 	/**
 	 * @param FileLocatorInterface $filelocator helper for searching asset sources
@@ -31,6 +33,14 @@ class CompositionLoader extends Loader
 		$this->locator = $filelocator;
 		$this->assetDirectory = $assetDirectory;
 		$this->pathHelper = $pathHelper;
+	}
+	
+	/**
+	 * Whether or not to display composit file paths.
+	 * @param boolean $mode
+	 */
+	public function setDebugMode($mode) {
+		$this->debugMode = $mode;
 	}
 
 	/**
@@ -63,7 +73,10 @@ class CompositionLoader extends Loader
 		
 		$fs = $this->getFilesystem();
 		
-		$fs->dumpFile($tmpPath, "/* --- composition: $resource ---*/");
+		if ($this->debugMode)
+		{
+			$fs->dumpFile($tmpPath, "/* --- composition: $resource ---*/");
+		}
 		
 		$tmpFile = fopen($tmpPath, "a");
 		
@@ -86,7 +99,10 @@ class CompositionLoader extends Loader
 					$content = file_get_contents($path);
 			}
 			
-			fwrite($tmpFile, "\n\n/* --- asset: $asset ($path) ---*/\n\n" . $content);
+			if ($this->debugMode)
+			{
+				fwrite($tmpFile, "\n\n/* --- asset: $asset ($path) ---*/\n\n" . $content);
+			}
 		}
 		
 		fclose($tmpFile);
